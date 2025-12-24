@@ -1,5 +1,5 @@
 """
-FINAL PROCESSOR: Formatter + Simplifier + Image Generator + AUTO CLEANUP
+Formatter + Simplifier + Image Generator + AUTO CLEANUP
 ------------------------------------------------------------------------
 1. Reads 'Original SVG' from Column B.
 2. Formats it -> Column C.
@@ -25,9 +25,8 @@ import time
 INPUT_FILE = 'railroad_diagrams.xlsx'
 DRIVER_FILENAME = "msedgedriver.exe"
 
-# ==========================================
+
 # 1. SETUP BROWSER (For Images)
-# ==========================================
 def setup_driver():
     # Find the driver in the current folder
     cwd = os.getcwd()
@@ -37,7 +36,7 @@ def setup_driver():
         print(f"❌ ERROR: '{DRIVER_FILENAME}' missing. Please put it in this folder.")
         return None
 
-    print("   🚀 Starting Edge Driver (Hidden)...")
+    print("Starting Edge Driver (Hidden)...")
     
     # Configure Edge options for headless (invisible) running
     options = Options()
@@ -79,7 +78,6 @@ def svg_to_image(driver, svg_code, output_path):
         print(f"     [Img Error]: {e}")
         return False
 
-# ==========================================
 # 2. SIMPLIFICATION LOGIC (Your Rules)
 # ==========================================
 def simplify_railroad_svg(svg_string):
