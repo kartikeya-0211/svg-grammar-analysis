@@ -1,6 +1,5 @@
 """
-COMPLETE WEB SCRAPER - Creates proper Excel with all headers
-Just run this once, then run simplified_svg.py
+WEB SCRAPER - Creates proper Excel with all headers
 """
 
 from selenium import webdriver
