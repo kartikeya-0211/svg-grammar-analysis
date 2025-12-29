@@ -23,19 +23,34 @@ def extract_command_name_from_url(url):
 
 
 def setup_driver():
-    """Setup Edge driver."""
+    """Setup Edge driver with silenced logs."""
+    
+    # 1. Define options
     edge_options = Options()
     edge_options.add_argument('--headless')
+    
+    # 2. Fix the GPU warning (The "unsafe-swiftshader" error)
+    edge_options.add_argument('--enable-unsafe-swiftshader')
+    
+    # 3. Silence the console noise
+    edge_options.add_argument("--log-level=3")  # 3 = Fatal only
+    edge_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    
+    # Standard settings you already had
     edge_options.add_argument('--disable-gpu')
     edge_options.add_argument('--no-sandbox')
     edge_options.add_argument('--disable-dev-shm-usage')
     edge_options.add_argument('--window-size=1920,1080')
     
+    # 4. Initialize
     driver_path = os.path.join(os.getcwd(), 'msedgedriver.exe')
     if not os.path.exists(driver_path):
         raise Exception(f"msedgedriver.exe not found in: {os.getcwd()}")
     
     service = Service(driver_path)
+    # Redirect internal driver logs to nowhere (DEVNULL) to keep terminal clean
+    service.creation_flags = 0x08000000 # specialized flag for Windows to hide console window
+    
     driver = webdriver.Edge(service=service, options=edge_options)
     return driver
 
@@ -93,12 +108,12 @@ def create_excel_with_headers(filename):
         cell.alignment = Alignment(horizontal='center', vertical='center')
         cell.font = Font(bold=True)
     
-    ws.column_dimensions['A'].width = 25
-    ws.column_dimensions['B'].width = 15
-    ws.column_dimensions['C'].width = 15
-    ws.column_dimensions['D'].width = 55
-    ws.column_dimensions['E'].width = 15
-    ws.column_dimensions['F'].width = 55
+    ws.column_dimensions['A'].width = 22
+    ws.column_dimensions['B'].width = 30
+    ws.column_dimensions['C'].width = 30
+    ws.column_dimensions['D'].width = 95
+    ws.column_dimensions['E'].width = 40
+    ws.column_dimensions['F'].width = 94
     
     return wb, ws
 
@@ -209,7 +224,7 @@ def scrape_cics_commands(links_file='links_cics.txt', output_excel='railroad_dia
         
         if success_count > 0:
             print("\n✅ NEXT STEP:")
-            print("   Run: python simplified_svg.py")
+            print("   Run: python script1_simplified_svg.py")
             print("=" * 70)
     except Exception as e:
         print(f"\n❌ Save Error: {e}")
@@ -228,7 +243,7 @@ if __name__ == "__main__":
     
     if choice == 'test':
         print("\n🧪 TEST MODE: First 3 commands\n")
-        scrape_cics_commands(max_commands=3)
+        scrape_cics_commands(max_commands=10)
     else:
         print("\n🚀 FULL MODE: All commands\n")
         print("⚠️  This will take 10-20 minutes...")
