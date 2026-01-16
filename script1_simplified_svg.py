@@ -64,10 +64,16 @@ def svg_to_image(driver, svg_code, output_path):
 
 
 def simplify_railroad_svg(svg_string):
+    # --- FIX: Sanitize HTML entities before parsing ---
+    if svg_string:
+        svg_string = svg_string.replace('&nbsp;', ' ')
+    # --------------------------------------------------
+
     ET.register_namespace('', 'http://www.w3.org/2000/svg')
     try:
         root = ET.fromstring(svg_string)
     except ET.ParseError:
+        # If parsing fails, return the sanitized string so at least Script 2 doesn't crash on entities
         return svg_string
 
     # 1. Extract <defs> and Main Group
