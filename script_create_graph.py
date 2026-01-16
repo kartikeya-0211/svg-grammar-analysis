@@ -1,5 +1,5 @@
 """
-SCRIPT 2: MASTER GRAPH GENERATOR (PRECISION MODE)
+SCRIPT : MASTER GRAPH GENERATOR (PRECISION MODE)
 -------------------------------------------------
 1. PRECISION BOXING: Padding reduced to 2px. No more "vacuuming" neighbors.
 2. GARBAGE FILTER: Removes empty nodes like '()' or '((('.
