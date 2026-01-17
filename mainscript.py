@@ -110,7 +110,7 @@ def main():
         c.alignment = Alignment(horizontal='center', vertical='center')
     
     # Adjust widths for readability
-    widths = [20, 30, 30, 80, 30, 60]
+    widths = [20, 30, 30, 90, 40, 43]
     for i, w in enumerate(widths, 1):
         ws.column_dimensions[chr(64+i)].width = w
     
