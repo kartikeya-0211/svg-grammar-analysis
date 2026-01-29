@@ -1,11 +1,11 @@
 """
-script3_optimized_regex.py
+script3_optimized_regex.py (v2)
 ------------------------------------------------------------------------
-1. Opens 'railroad_diagrams_complete.xlsx' (safely, keeping images).
-2. Reads 'Unoptimized Grammar' from Column F.
-3. Converts it to a clean Regex (replacing 'null' with '$' and fixing spaces).
-4. Writes the result to Column G ('Optimized Regex').
-5. Sets Column G width to 43.
+1. Opens 'railroad_diagrams_complete.xlsx'.
+2. Reads 'Command' (Col A) and 'Unoptimized Grammar' (Col F).
+3. Generates Regex.
+4. PREPENDS Command Name if missing from the diagram.
+5. Writes result to 'Optimized Regex' (Col G).
 """
 
 import sys
@@ -21,18 +21,43 @@ except ImportError:
     sys.exit()
 
 INPUT_FILE = 'railroad_diagrams_complete.xlsx'
+COL_COMMAND = 1  # Column A
 COL_GRAMMAR = 6  # Column F
 COL_OUTPUT = 7   # Column G
 
+# Common CICS verbs to help split command names (e.g. "CHANGEPASSWORD" -> "CHANGE PASSWORD")
+KNOWN_VERBS = [
+    "CHANGE", "INQUIRE", "SET", "PERFORM", "DISABLE", "ENABLE", 
+    "EXTRACT", "ISSUE", "RESYNC", "RETRIEVE", "SEND", "RECEIVE", 
+    "START", "STOP", "SUSPEND", "WAIT", "WRITE", "REWRITE", 
+    "DELETE", "FREE", "POINT", "PROCESS", "PUT", "QUERY", 
+    "READ", "RELEASE", "RESET", "RESUME", "ROLLBACK", "SIGNAL", 
+    "SPOOL", "TEST", "UNLOCK", "VERIFY", "CONVERSE", "CONNECT"
+]
+
 def clean_label(label):
-    """
-    Cleans up labels:
-    1. Removes extra spaces inside parentheses: 'FILE( name )' -> 'FILE(name)'
-    """
+    """Cleans up labels, removing spaces in parens."""
     if not label: return ""
     label = re.sub(r'\(\s+', '(', label)
     label = re.sub(r'\s+\)', ')', label)
     return label
+
+def format_command_name(cmd_raw):
+    """
+    Tries to format 'CHANGEPASSWORD' -> 'CHANGE PASSWORD' 
+    based on known verbs.
+    """
+    if not cmd_raw: return ""
+    cmd_upper = cmd_raw.upper().strip()
+    
+    # Check if it starts with a known verb
+    for verb in KNOWN_VERBS:
+        if cmd_upper.startswith(verb) and len(cmd_upper) > len(verb):
+            # If the next char is not a space, insert one
+            suffix = cmd_upper[len(verb):]
+            if not suffix.startswith(" "):
+                return f"{verb} {suffix}"
+    return cmd_upper
 
 def get_regex_from_grammar(input_data):
     if not isinstance(input_data, str) or not input_data.strip():
@@ -76,7 +101,6 @@ def get_regex_from_grammar(input_data):
 
         if src not in adj: adj[src] = []
         adj[src].append((target, label))
-        
         if target != "FINAL_STATE":
             all_nodes.add(target)
             incoming.add(target)
@@ -122,7 +146,7 @@ def get_regex_from_grammar(input_data):
         if not path_list: return ""
         if len(path_list) == 1: return "".join(path_list[0])
 
-        # Common Prefix
+        # Prefix
         prefix = []
         while path_list and all(p for p in path_list):
             if all(p[0] == path_list[0][0] for p in path_list):
@@ -130,7 +154,7 @@ def get_regex_from_grammar(input_data):
                 for p in path_list: p.pop(0)
             else: break
         
-        # Common Suffix
+        # Suffix
         suffix = []
         while path_list and all(p for p in path_list):
             if all(p[-1] == path_list[0][-1] for p in path_list):
@@ -138,7 +162,7 @@ def get_regex_from_grammar(input_data):
                 for p in path_list: p.pop()
             else: break
 
-        # Middles
+        # Middle
         middles = []
         has_empty = False
         for p in path_list:
@@ -165,7 +189,7 @@ def get_regex_from_grammar(input_data):
 
 def main():
     print("=" * 60)
-    print("      SCRIPT 3: OPTIMIZED REGEX GENERATOR")
+    print("      SCRIPT 3: OPTIMIZED REGEX GENERATOR (V2)")
     print("=" * 60)
 
     if not os.path.exists(INPUT_FILE):
@@ -176,42 +200,72 @@ def main():
     wb = load_workbook(INPUT_FILE)
     ws = wb.active
 
-    # --- UPDATED: SET COLUMN WIDTH ---
-    output_col_letter = get_column_letter(COL_OUTPUT) # Column G
-    ws.column_dimensions[output_col_letter].width = 43  # <--- HERE IS YOUR WIDTH 43
-    
-    # Header
+    # Setup Column G
+    output_col_letter = get_column_letter(COL_OUTPUT)
+    ws.column_dimensions[output_col_letter].width = 43
     header_cell = ws.cell(row=1, column=COL_OUTPUT)
     header_cell.value = "Optimized Regex"
     header_cell.font = Font(bold=True)
     header_cell.alignment = Alignment(horizontal='center')
 
-    # Iterate rows
     row_idx = 2
     count = 0
     
     while True:
-        # Stop if no more data in Column A
-        if not ws.cell(row=row_idx, column=1).value:
-            break
-            
-        # Read Grammar from Column F
+        # Check if row exists
+        cmd_cell = ws.cell(row=row_idx, column=COL_COMMAND)
+        if not cmd_cell.value: break
+        
+        cmd_name_raw = str(cmd_cell.value).strip()
         grammar_text = ws.cell(row=row_idx, column=COL_GRAMMAR).value
         
         if not grammar_text:
             row_idx += 1
             continue
 
-        # Process
+        # 1. Generate Basic Regex
         regex = get_regex_from_grammar(grammar_text)
         
-        # Write to Column G
+        # 2. Check for missing Command Name
+        # Logic: If the regex doesn't start with the command (or the command's prefix), prepend it.
+        
+        # Format "CHANGEPASSWORD" -> "CHANGE PASSWORD"
+        nice_cmd_name = format_command_name(cmd_name_raw)
+        
+        # Determine the first word of the generated regex to compare
+        # (Remove optional parens like '(TCTUA...' -> 'TCTUA')
+        first_token = regex.lstrip('(').split(' ')[0].split('(')[0]
+        
+        # Does the Regex already contain the command?
+        # e.g. cmd="CHANGE", regex="CHANGE TASK..." -> Yes.
+        # e.g. cmd="ADDRESS", regex="TCTUA..." -> No.
+        
+        # We check if the Command starts with the First Token (e.g. ALLOCATE starts with ALLOCATE)
+        # OR if the First Token starts with the Command (rare, but possible)
+        # If neither, we assume the command is missing.
+        
+        starts_with_cmd = False
+        if first_token and nice_cmd_name:
+            # Check overlap
+            if nice_cmd_name.startswith(first_token) or first_token.startswith(nice_cmd_name.split(' ')[0]):
+                starts_with_cmd = True
+                
+        # Special fix: "ADDRESS" vs "TCTUA" -> starts_with_cmd = False
+        
+        if not starts_with_cmd and regex:
+            # Prepend the formatted command name
+            if regex == "$": 
+                 # If regex is just End of Line, it means "COMMAND_NAME" is the only thing.
+                regex = f"{nice_cmd_name}$"
+            else:
+                regex = f"{nice_cmd_name} {regex}"
+
+        # Write result
         out_cell = ws.cell(row=row_idx, column=COL_OUTPUT)
         out_cell.value = regex
         out_cell.alignment = Alignment(wrap_text=True, vertical='top')
 
-        # Console Progress
-        print(f"Row {row_idx}: {regex[:50]}..." if regex else f"Row {row_idx}: [Empty]")
+        print(f"Row {row_idx}: {regex[:60]}...")
         
         row_idx += 1
         count += 1
@@ -222,3 +276,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+    

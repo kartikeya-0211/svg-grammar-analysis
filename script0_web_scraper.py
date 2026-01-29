@@ -1,5 +1,9 @@
 """
-WEB SCRAPER - Creates proper Excel with all headers
+WEB SCRAPER - FRESH START
+1. Creates 'railroad_diagrams.xlsx' with 10 empty columns.
+2. Scrapes Command Name -> Column A
+3. Scrapes URL -> Column B
+4. Scrapes Raw SVG -> Column C
 """
 
 from selenium import webdriver
@@ -14,242 +18,161 @@ import os
 import re
 import time
 
+# --- CONFIGURATION ---
+LINKS_FILE = 'links_cics.txt'
+OUTPUT_FILE = 'railroad_diagrams.xlsx'
+DRIVER_PATH = os.path.join(os.getcwd(), 'msedgedriver.exe')
+
 def extract_command_name_from_url(url):
-    """Extract command name from URL."""
+    """Extracts command name from URL."""
     filename = url.split('/')[-1].replace('.html', '')
     command = filename.replace('dfhp4_', '').replace('dfhp4-', '')
     words = re.sub(r'([a-z])([A-Z])', r'\1 \2', command).upper()
     return words 
 
-
 def setup_driver():
-    """Setup Edge driver with silenced logs."""
-    
-    # 1. Define options
+    """Setup Edge driver."""
     edge_options = Options()
     edge_options.add_argument('--headless')
-    
-    # 2. Fix the GPU warning (The "unsafe-swiftshader" error)
     edge_options.add_argument('--enable-unsafe-swiftshader')
-    
-    # 3. Silence the console noise
-    edge_options.add_argument("--log-level=3")  # 3 = Fatal only
+    edge_options.add_argument("--log-level=3")
     edge_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    
-    # Standard settings you already had
-    edge_options.add_argument('--disable-gpu')
-    edge_options.add_argument('--no-sandbox')
-    edge_options.add_argument('--disable-dev-shm-usage')
     edge_options.add_argument('--window-size=1920,1080')
     
-    # 4. Initialize
-    driver_path = os.path.join(os.getcwd(), 'msedgedriver.exe')
-    if not os.path.exists(driver_path):
-        raise Exception(f"msedgedriver.exe not found in: {os.getcwd()}")
+    if not os.path.exists(DRIVER_PATH):
+        raise Exception(f"❌ msedgedriver.exe not found at: {DRIVER_PATH}")
     
-    service = Service(driver_path)
-    # Redirect internal driver logs to nowhere (DEVNULL) to keep terminal clean
-    service.creation_flags = 0x08000000 # specialized flag for Windows to hide console window
+    service = Service(DRIVER_PATH)
+    service.creation_flags = 0x08000000 
     
     driver = webdriver.Edge(service=service, options=edge_options)
     return driver
 
+def create_excel_structure(filename):
+    """Creates the specific 10-column layout."""
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Railroad Data"
+    
+    # THE 10 COLUMNS
+    headers = [
+        "Command",                  # A (Script 0)
+        "URL",                      # B (Script 0)
+        "Raw SVG Code",             # C (Script 0)
+        "Raw SVG Image",            # D (Script 1)
+        "Simplified SVG Code",      # E (Script 1)
+        "Simplified SVG Image",     # F (Script 1)
+        "Connected SVG Code",       # G (Script 1)
+        "Connected SVG Image",      # H (Script 1)
+        "Unoptimized Grammar",      # I (Script 2)
+        "Optimized Regex"           # J (Script 3)
+    ]
+    
+    # Apply Headers
+    for col_idx, header in enumerate(headers, start=1):
+        cell = ws.cell(row=1, column=col_idx)
+        cell.value = header
+        cell.font = Font(bold=True, size=11)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+    
+    # Set Widths for visibility
+    ws.column_dimensions['A'].width = 25  # Command
+    ws.column_dimensions['B'].width = 40  # URL
+    ws.column_dimensions['C'].width = 40  # Raw Code
+    ws.column_dimensions['D'].width = 50  # Raw Img
+    ws.column_dimensions['E'].width = 25  # Simp Code
+    ws.column_dimensions['F'].width = 50  # Simp Img
+    ws.column_dimensions['G'].width = 25  # Conn Code
+    ws.column_dimensions['H'].width = 50  # Conn Img
+    ws.column_dimensions['I'].width = 40  # Grammar
+    ws.column_dimensions['J'].width = 50  # Regex
+    
+    ws.row_dimensions[1].height = 30
+    
+    return wb, ws
 
-def extract_svg_from_page(driver, url, timeout=10):
-    """Load page and extract SVG."""
+def extract_svg(driver, url):
+    """Loads page and grabs SVG HTML."""
     try:
-        print(f"    Loading: {url}...", end=" ")
         driver.get(url)
-        time.sleep(2)
-        
-        svg_element = None
+        # Fast wait: 2 seconds max
         try:
-            svg_element = WebDriverWait(driver, timeout).until(
+            svg = WebDriverWait(driver, 2).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'svg.syntaxdiagram'))
             )
         except:
             try:
-                svg_element = WebDriverWait(driver, 3).until(
+                svg = WebDriverWait(driver, 1).until(
                     EC.presence_of_element_located((By.TAG_NAME, 'svg'))
                 )
             except:
-                pass
-        
-        if svg_element:
-            svg_html = svg_element.get_attribute('outerHTML')
-            print("✅ SVG Captured!")
-            return svg_html
-        else:
-            print("⚠️  No SVG found")
-            return None
-            
-    except Exception as e:
-        print(f"❌ Error: {e}")
+                return None
+        return svg.get_attribute('outerHTML')
+    except:
         return None
 
-
-def create_excel_with_headers(filename):
-    """Create new Excel with all proper headers."""
-    wb = Workbook()
-    ws = wb.active
-    
-    headers = [
-        "Command",
-        "Original SVG",
-        "Original Formatted SVG",
-        "Original SVG Image",
-        "Simplified Formatted SVG",
-        "Simplified SVG Image"
-    ]
-    
-    for col_idx, header in enumerate(headers, start=1):
-        cell = ws.cell(row=1, column=col_idx)
-        cell.value = header
-        cell.alignment = Alignment(horizontal='center', vertical='center')
-        cell.font = Font(bold=True)
-    
-    ws.column_dimensions['A'].width = 22
-    ws.column_dimensions['B'].width = 30
-    ws.column_dimensions['C'].width = 30
-    ws.column_dimensions['D'].width = 95
-    ws.column_dimensions['E'].width = 40
-    ws.column_dimensions['F'].width = 94
-    
-    return wb, ws
-
-
-def scrape_cics_commands(links_file='links_cics.txt', output_excel='railroad_diagrams.xlsx', max_commands=None):
-    """Main scraper."""
-    
+def main():
     print("=" * 70)
-    print("CICS SVG WEB SCRAPER")
+    print("STEP 1: FRESH WEB SCRAPER (10-COLUMN SETUP)")
     print("=" * 70)
-    print(f"📂 Reading links from: {links_file}")
-    print(f"💾 Output Excel file: {output_excel}")
-    if max_commands:
-        print(f"⚠️  Test mode: Processing only first {max_commands} commands")
-    print("-" * 70)
     
-    # Read URLs
-    try:
-        with open(links_file, 'r', encoding='utf-8') as f:
-            urls = [line.strip() for line in f if line.strip()]
-    except FileNotFoundError:
-        print(f"❌ ERROR: File '{links_file}' not found!")
+    # 1. Read Links
+    if not os.path.exists(LINKS_FILE):
+        print(f"❌ Error: '{LINKS_FILE}' not found.")
         return
+
+    with open(LINKS_FILE, 'r') as f:
+        urls = [line.strip() for line in f if line.strip()]
+
+    print(f"📄 Found {len(urls)} URLs.")
     
-    if max_commands:
-        urls = urls[:max_commands]
+    # 2. Ask Mode
+    choice = input("Run (t)est [first 3] or (f)ull [all]? ").strip().lower()
+    if choice == 't':
+        urls = urls[:3]
+        print("🧪 Test Mode: Processing 3 URLs...")
     
-    print(f"✅ Found {len(urls)} URL(s) to process")
+    # 3. Create File
+    print(f"💾 Creating {OUTPUT_FILE} with 10 columns...")
+    wb, ws = create_excel_structure(OUTPUT_FILE)
     
-    # Check if file exists - ask what to do
-    if os.path.exists(output_excel):
-        print(f"\n⚠️  File '{output_excel}' already exists!")
-        choice = input("(a)ppend new data or (o)verwrite file? [a/o]: ").strip().lower()
-        
-        if choice == 'o':
-            print("🗑️  Creating new file...")
-            wb, ws = create_excel_with_headers(output_excel)
-            row_num = 2
-        else:
-            print("📂 Loading existing file...")
-            wb = load_workbook(output_excel)
-            ws = wb.active
-            
-            # Find next empty row
-            row_num = 2
-            while ws.cell(row=row_num, column=1).value:
-                row_num += 1
-            print(f"   Will append starting at row {row_num}")
-    else:
-        print("📄 Creating new file...")
-        wb, ws = create_excel_with_headers(output_excel)
-        row_num = 2
+    # 4. Scrape
+    driver = setup_driver()
+    print("✅ Driver ready. Starting scrape...\n")
     
-    print("🔧 Setting up Edge driver...")
-    
-    # Setup driver
-    try:
-        driver = setup_driver()
-        print("✅ Edge driver ready\n")
-    except Exception as e:
-        print(f"❌ Driver setup failed: {e}")
-        return
-    
-    # Scrape URLs
-    success_count = 0
-    failed_count = 0
-    
-    print("Scraping web pages...\n")
+    row = 2
+    success = 0
     
     try:
-        for idx, url in enumerate(urls, 1):
-            print(f"[{idx}/{len(urls)}] Processing...")
+        for i, url in enumerate(urls, 1):
+            cmd = extract_command_name_from_url(url)
+            print(f"[{i}] {cmd}...", end=" ")
             
-            command_name = extract_command_name_from_url(url)
-            print(f"    Command: {command_name}")
+            svg_content = extract_svg(driver, url)
             
-            svg_content = extract_svg_from_page(driver, url)
+            # Write Data
+            ws.cell(row=row, column=1, value=cmd)      # Col A
+            ws.cell(row=row, column=2, value=url)      # Col B
             
             if svg_content:
-                ws.cell(row=row_num, column=1, value=command_name)
-                
-                cell_b = ws.cell(row=row_num, column=2, value=svg_content)
-                cell_b.alignment = Alignment(wrap_text=True, vertical='top')
-                
-                ws.row_dimensions[row_num].height = 100
-                
-                success_count += 1
-                row_num += 1
+                cell_c = ws.cell(row=row, column=3, value=svg_content) # Col C
+                cell_c.alignment = Alignment(wrap_text=True, vertical='top')
+                ws.row_dimensions[row].height = 40
+                print("✅ SVG Saved")
+                success += 1
             else:
-                failed_count += 1
-            
-            print()
-            time.sleep(0.5)
+                print("⚠️ No SVG found")
+                
+            row += 1
+            # Save every 5 rows to be safe
+            if i % 5 == 0: wb.save(OUTPUT_FILE)
             
     finally:
         driver.quit()
-        print("🔧 Edge driver closed")
-    
-    # Save
-    try:
-        wb.save(output_excel)
+        wb.save(OUTPUT_FILE)
         print("-" * 70)
-        print(f"✅ Successfully scraped: {success_count} command(s)")
-        if failed_count > 0:
-            print(f"⚠️  Failed to scrape:    {failed_count} command(s)")
-        print(f"💾 Excel saved: {output_excel}")
-        print("=" * 70)
-        
-        if success_count > 0:
-            print("\n✅ NEXT STEP:")
-            print("   Run: python script1_simplified_svg.py")
-            print("=" * 70)
-    except Exception as e:
-        print(f"\n❌ Save Error: {e}")
-
+        print(f"✅ Finished. Scraped {success}/{len(urls)}.")
+        print(f"📂 Output: {OUTPUT_FILE}")
 
 if __name__ == "__main__":
-    print("\n" + "=" * 70)
-    print("STEP 1: WEB SCRAPER")
-    print("=" * 70)
-    print("\nScrapes SVG diagrams from IBM docs")
-    print("Creates Excel with proper headers")
-    print("\n⚠️  Requires: msedgedriver.exe in same folder")
-    print("=" * 70 + "\n")
-    
-    choice = input("Process ALL or TEST (first 3)? [all/test]: ").strip().lower()
-    
-    if choice == 'test':
-        print("\n🧪 TEST MODE: First 3 commands\n")
-        scrape_cics_commands(max_commands=10)
-    else:
-        print("\n🚀 FULL MODE: All commands\n")
-        print("⚠️  This will take 10-20 minutes...")
-        input("Press Enter to continue...")
-        print()
-        scrape_cics_commands()
-    
-    print("\nPress Enter to exit...")
-    input()
+    main()
