@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="145.0083827972412px" preserveAspectRatio="xMidYMid meet" viewBox="0 0 145.0083827972412 25.70138931274414" height="25.70138931274414px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><g transform="translate(5,5)" class="diagram" xml:base="..//"><g transform="translate(10,8.572916984558105)" class="boxed groupcomp"><g transform="translate(4,0)" class="unboxed syntaxkwd"><g class="text" transform="translate(0,3)"><text class="syntaxkwd">SOAPFAULT DELETE</text></g></g><rect rx="3" x="0" width="110.00838279724121" height="15.70138931274414" y="-8.572916984558105" class="syntaxgroupcomp"></rect></g><polygon class="arrowheadStartEnd" points="0,8.572916984558105 -5,11.072916984558105 -5,6.0729169845581055" transform="rotate(0,0,8.572916984558105)"></polygon><polygon class="arrowheadStartEnd" points="5,8.572916984558105 0,11.072916984558105 0,6.0729169845581055" transform="rotate(0,5,8.572916984558105)"></polygon><line y2="8.572916984558105" x1="0" x2="10" class="syntaxarrow" y1="8.572916984558105"></line><line y2="8.572916984558105" x1="120.00838279724121" x2="130.0083827972412" class="syntaxarrow" y1="8.572916984558105"></line><polygon class="arrowheadStartEnd" points="130.0083827972412,8.572916984558105 125.00838279724121,11.072916984558105 125.00838279724121,6.0729169845581055" transform="rotate(0,130.0083827972412,8.572916984558105)"></polygon><polygon class="arrowheadStartEnd" points="130.0083827972412,8.572916984558105 125.00838279724121,11.072916984558105 125.00838279724121,6.0729169845581055" transform="rotate(180,130.0083827972412,8.572916984558105)"></polygon></g></svg>
