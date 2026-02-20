@@ -1,302 +1,161 @@
-"""
-script2_unoptimzed_grammar.py
-------------------------------------------------------------------------
-STANDALONE MODE:
-Run this file directly to process 'railroad_diagrams_complete.xlsx'.
-It reads simplified SVGs from Column E and writes Grammar to Column F.
-"""
-
-import xml.dom.minidom
-import re
-import math
-import sys
 import os
+import xml.dom.minidom
+import openpyxl
+from openpyxl.styles import Alignment
 
-# Try importing openpyxl for standalone mode
-try:
-    from openpyxl import load_workbook
-    from openpyxl.styles import Alignment
-except ImportError:
-    pass
+# A tiny helper function to safely pull numbers out of the SVG tags.
+# If an attribute (like 'x' or 'y') is missing, it returns 0.0 to prevent crashes.
+def get_flt(elem, attr):
+    val = elem.getAttribute(attr)
+    return float(val) if val else 0.0
 
-INPUT_FILE = 'railroad_diagrams_complete.xlsx'
-
-# ==========================================
-# 1. Coordinate Mapper System (Small n)
-# ==========================================
-class NodeMapper:
-    """
-    Acts as the 'Lexer'. Groups geometric points into Nodes (n0, n1...).
-    Uses tolerance to connect fragmented lines.
-    """
-    def __init__(self, tolerance=4.0):
-        self.nodes = [] 
-        self.counter = 0
-        self.tolerance = tolerance
-
-    def get_node_id(self, x, y):
-        for node in self.nodes:
-            dist = math.sqrt((node['x'] - x)**2 + (node['y'] - y)**2)
-            if dist < self.tolerance:
-                return node['id']
-        
-        # Generates n0, n1, n2...
-        new_id = f"n{self.counter}"
-        self.nodes.append({'x': x, 'y': y, 'id': new_id})
-        self.counter += 1
-        return new_id
+def generate_grammar_from_svg(svg_path):
+    doc = xml.dom.minidom.parse(svg_path)
     
-    def get_all_nodes(self):
-        return [n['id'] for n in self.nodes]
-
-# ==========================================
-# 2. SVG Path Parser
-# ==========================================
-def parse_path_segments(d_string):
-    # Normalize command spacing
-    d_string = re.sub(r'([a-zA-Z])', r' \1 ', d_string)
-    tokens = d_string.replace(',', ' ').split()
-    
-    segments = []
-    current_x, current_y = 0.0, 0.0
-    
-    i = 0
-    while i < len(tokens):
-        cmd = tokens[i]
-        try:
-            if cmd == 'M':
-                current_x = float(tokens[i+1])
-                current_y = float(tokens[i+2])
-                i += 3
-            elif cmd == 'L':
-                next_x = float(tokens[i+1])
-                next_y = float(tokens[i+2])
-                segments.append((current_x, current_y, next_x, next_y))
-                current_x, current_y = next_x, next_y
-                i += 3
-            elif cmd == 'H':
-                next_x = float(tokens[i+1])
-                segments.append((current_x, current_y, next_x, current_y))
-                current_x = next_x
-                i += 2
-            elif cmd == 'V':
-                next_y = float(tokens[i+1])
-                segments.append((current_x, current_y, current_x, next_y))
-                current_y = next_y
-                i += 2
-            elif cmd == 'C': # Cubic Bezier - approximate to end point
-                next_x = float(tokens[i+5])
-                next_y = float(tokens[i+6])
-                segments.append((current_x, current_y, next_x, next_y))
-                current_x, current_y = next_x, next_y
-                i += 7
-            elif cmd == 'Q': # Quadratic Bezier - approximate to end point
-                next_x = float(tokens[i+3])
-                next_y = float(tokens[i+4])
-                segments.append((current_x, current_y, next_x, next_y))
-                current_x, current_y = next_x, next_y
-                i += 5
-            elif cmd in ['Z', 'z']:
-                i += 1
-            else:
-                i += 1
-        except IndexError:
-            break
-            
-    return segments
-
-# ==========================================
-# 3. Main Grammar Extraction Logic
-# ==========================================
-def natural_keys(text):
-    """
-    Helper to sort strings like n1, n2, n10 correctly.
-    """
-    def atoi(text):
-        return int(text) if text.isdigit() else text
-    return [atoi(c) for c in re.split(r'(\d+)', text)]
-
-def extract_node_number(node_str):
-    match = re.search(r'n(\d+)', node_str)
-    return int(match.group(1)) if match else 0
-
-def clean_svg(svg_content):
-    """
-    Basic cleanup only. 
-    HTML entities are ALREADY handled by Script 1, so we do NOT unescape here.
-    """
-    if not svg_content: return ""
-    # Remove any weird xmlns definitions that might duplicate
-    svg_content = re.sub(r'xmlns:ns\d+=""[^""]+""', '', svg_content)
-    return svg_content
-
-def extract_grammar_from_svg(svg_content):
-    """
-    Parses SVG XML string and returns a LIST of grammar rules.
-    """
-    clean_content = clean_svg(svg_content)
-    
-    try:
-        doc = xml.dom.minidom.parseString(clean_content)
-    except Exception as e:
-        # Fallback: wrap in root if it's missing (rare)
-        try:
-            doc = xml.dom.minidom.parseString(f"<root>{clean_content}</root>")
-        except:
-            return [f"Error parsing SVG: {str(e)}"]
-
-    mapper = NodeMapper(tolerance=4.0)
-    rules = []
-    
-    # 1. Parse Lines & Paths
-    raw_segments = []
+    # 1. FIND THE RAILROAD TRACKS (Mainlines)
+    # We look at all horizontal lines where the start Y equals the end Y.
+    # We save these Y-coordinates because they tell us the exact vertical level of the main flow.
+    mainlines = []
     for line in doc.getElementsByTagName('line'):
-        try:
-            x1 = float(line.getAttribute('x1'))
-            y1 = float(line.getAttribute('y1'))
-            x2 = float(line.getAttribute('x2'))
-            y2 = float(line.getAttribute('y2'))
-            is_default = 'default' in line.getAttribute('class').lower()
-            raw_segments.append({'p1':(x1,y1), 'p2':(x2,y2), 'default': is_default})
-        except ValueError: continue
+        y1 = get_flt(line, 'y1')
+        y2 = get_flt(line, 'y2')
+        if y1 == y2 and y1 not in mainlines:
+            mainlines.append(y1)
+    
+    # We sort them. If the diagram has no horizontal lines, we default to 0.0.
+    mainlines.sort()
+    if not mainlines:
+        mainlines = [0.0]
 
-    for path in doc.getElementsByTagName('path'):
-        d = path.getAttribute('d')
-        is_default = 'default' in path.getAttribute('class').lower()
-        segs = parse_path_segments(d)
-        for s in segs:
-            raw_segments.append({'p1':(s[0], s[1]), 'p2':(s[2], s[3]), 'default': is_default})
+    # 2. CREATE LOGICAL NODES (Bounding Boxes)
+    # The SVG draws a <rect> around every logical text group.
+    # We extract these boxes so we know exactly where the group's borders are.
+    nodes = []
+    for rect in doc.getElementsByTagName('rect'):
+        x = get_flt(rect, 'x')
+        y = get_flt(rect, 'y')
+        w = get_flt(rect, 'width')
+        h = get_flt(rect, 'height')
+        nodes.append({'x': x, 'y': y, 'w': w, 'h': h, 'texts': []})
 
-    # 2. Parse Text/Rects (Terminals)
-    terminals = []
-    for text_node in doc.getElementsByTagName('text'):
-        if text_node.firstChild and text_node.firstChild.nodeType == text_node.TEXT_NODE:
-            content = text_node.firstChild.nodeValue.strip()
-        else:
-            content = ""
-        if not content: continue
-        
-        # Heuristic for input/output points if rect is missing
-        try:
-            tx = float(text_node.getAttribute('x') or 0)
-            ty = float(text_node.getAttribute('y') or 0)
+    # 3. FILL THE BOXES WITH TEXT
+    # We grab every piece of text and check its coordinates.
+    # If the text sits inside one of our bounding boxes, we assign it to that specific Node.
+    for t in doc.getElementsByTagName('text'):
+        if t.firstChild and t.firstChild.nodeType == t.TEXT_NODE:
+            tx = get_flt(t, 'x')
+            ty = get_flt(t, 'y')
+            text_val = t.firstChild.nodeValue.strip()
             
-            # Look for sibling rect
-            sibling = text_node.nextSibling
-            rect_found = False
-            while sibling:
-                if sibling.nodeType == 1 and sibling.tagName == 'rect':
-                    rx = float(sibling.getAttribute('x'))
-                    ry = float(sibling.getAttribute('y'))
-                    rw = float(sibling.getAttribute('width'))
-                    rh = float(sibling.getAttribute('height'))
-                    mid_y = ry + (rh / 2.0)
-                    input_pt = (rx, mid_y)
-                    output_pt = (rx + rw, mid_y)
-                    rect_found = True
+            # We add a 5-pixel padding just in case the text spills slightly over the box edge.
+            for node in nodes:
+                if node['x'] - 5 <= tx <= node['x'] + node['w'] + 5 and node['y'] - 5 <= ty <= node['y'] + node['h'] + 5:
+                    node['texts'].append({'x': tx, 'val': text_val})
                     break
-                sibling = sibling.nextSibling
+
+    # 4. CLEAN UP THE NODES
+    # We merge the text chunks (e.g., "ABCODE(", "name", ")") into one solid string.
+    # We assign this completed Node to the closest horizontal Mainline (Row).
+    valid_nodes = []
+    for node in nodes:
+        if node['texts']:
+            node['texts'].sort(key=lambda k: k['x'])
+            node['text_str'] = "".join([t['val'] for t in node['texts']])
             
-            if not rect_found:
-                # Fallback based on text length
-                approx_w = len(content) * 8 
-                mid_y = ty - 5
-                input_pt = (tx - 5, mid_y)
-                output_pt = (tx + approx_w, mid_y)
+            closest_main = min(mainlines, key=lambda m: abs(m - node['y']))
+            node['row_y'] = closest_main
+            valid_nodes.append(node)
+
+    # Our safety net. If no valid boxes exist, we just output null.
+    if not valid_nodes:
+        return "n0 -> null"
+
+    # 5. REBUILD THE GRAPH 
+    # We sort primarily by the assigned Mainline Row, then horizontally by Column (X-axis).
+    valid_nodes.sort(key=lambda k: (k['row_y'], k['x']))
+    grammar_lines = []
+    n_count = 0
+
+    # 6. GROUP INTO ROWS AND COLUMNS
+    # We group the nodes by their assigned Row.
+    rows_dict = {}
+    for node in valid_nodes:
+        rows_dict.setdefault(node['row_y'], []).append(node)
+
+    for row_y, row_nodes in rows_dict.items():
+        cols = []
+        current_col = []
+        max_x = -1
+        
+        # We process the Columns. If nodes physically overlap on the X-axis, they are Parallel Alternatives.
+        # If they don't overlap, they are Sequential Steps (a new column).
+        for node in row_nodes:
+            if not current_col or node['x'] <= max_x + 5:
+                current_col.append(node)
+                max_x = max(max_x, node['x'] + node['w'])
+            else:
+                cols.append(current_col)
+                current_col = [node]
+                max_x = node['x'] + node['w']
+        if current_col:
+            cols.append(current_col)
+
+        # 7. GENERATE THE GRAMMAR
+        for col in cols:
+            current_n = f"n{n_count}"
+            next_n = f"n{n_count + 1}"
             
-            terminals.append({
-                'text': content,
-                'in': input_pt,
-                'out': output_pt
-            })
-        except: continue
+            # We check if ANY box in this column is physically touched by the mainline.
+            # If nothing touches the mainline, the mainline is an empty bypass path!
+            intersects_main = any(node['y'] - 2 <= row_y <= node['y'] + node['h'] + 2 for node in col)
+            
+            if not intersects_main:
+                grammar_lines.append(f"{current_n} -> {next_n}")
+                
+            for node in col:
+                grammar_lines.append(f"{current_n} -> {node['text_str']} {next_n}")
+                
+            n_count += 1
 
-    # 3. Build Rules
-    for seg in raw_segments:
-        start_id = mapper.get_node_id(*seg['p1'])
-        end_id = mapper.get_node_id(*seg['p2'])
-        
-        suffix = " (default)" if seg['default'] else ""
-        if start_id != end_id:
-            rules.append(f"{start_id} -> {end_id}{suffix}")
+    # We cap it off and return the string.
+    grammar_lines.append(f"n{n_count} -> null")
+    return "\n".join(grammar_lines)
 
-    # Add terminals
-    for term in terminals:
-        in_id = mapper.get_node_id(*term['in'])
-        out_id = mapper.get_node_id(*term['out'])
-        rules.append(f"{in_id} -> {term['text']} {out_id}")
 
-    # 4. Add 'null' for end nodes
-    all_nodes = mapper.get_all_nodes()
-    all_nodes.sort(key=lambda x: extract_node_number(x))
-    
-    sources = set([r.split('->')[0].strip() for r in rules])
-    for node in all_nodes:
-        if node not in sources:
-            rules.append(f"{node} -> null")
+# The Excel execution pipeline remains the exact same.
+def process_railroad_diagrams(excel_filename, svg_folder):
+    wb = openpyxl.load_workbook(excel_filename)
+    sheet = wb.active
+    sheet['G1'] = "Unoptimized Grammar"
 
-    # Sort rules naturally (n0, n1, n2...)
-    rules.sort(key=lambda x: natural_keys(x.split('->')[0]))
-    
-    return rules
-
-# ==========================================
-# 4. COMPATIBILITY & STANDALONE RUNNER
-# ==========================================
-def convert_svg_to_grammar(svg_content):
-    """Wrapper for Main Script."""
-    rules_list = extract_grammar_from_svg(svg_content)
-    if not rules_list: return ""
-    return "\n".join(rules_list)
-
-def main_standalone():
-    print("=" * 70)
-    print("      SCRIPT 2: STANDALONE MODE (SMALL N)")
-    print("=" * 70)
-    
-    if not os.path.exists(INPUT_FILE):
-        print(f"❌ {INPUT_FILE} not found.")
-        return
-
-    print(f"📂 Opening {INPUT_FILE}...")
-    wb = load_workbook(INPUT_FILE)
-    ws = wb.active
-    
-    # Ensure header
-    ws.cell(row=1, column=6).value = "Right Regular Grammar (Unoptimized)"
-    
-    row = 2
-    success = 0
-    
-    while True:
-        cmd = ws.cell(row=row, column=1).value
-        if not cmd: break
-        
-        svg = ws.cell(row=row, column=5).value
-        print(f"Row {row} ({cmd}): ", end="")
-        
-        if not svg:
-            print("⚠️ Skipped")
-            row += 1
+    for row in range(2, sheet.max_row + 1):
+        raw_val = sheet.cell(row=row, column=1).value
+        if not raw_val:
             continue
             
-        try:
-            grammar = convert_svg_to_grammar(svg)
-            if grammar:
-                ws.cell(row=row, column=6, value=grammar).alignment = Alignment(wrap_text=True, vertical='top')
-                print(f"✅ Generated ({len(grammar.splitlines())} lines)")
-                success += 1
-            else:
-                print("⚠️ No rules")
-        except Exception as e:
-            print(f"❌ Error: {e}")
+        svg_filename = str(raw_val).strip()
+        if not svg_filename.lower().endswith('.svg'):
+            svg_filename += '.svg'
             
-        row += 1
+        absolute_path = os.path.abspath(os.path.join(svg_folder, svg_filename))
         
-    wb.save(INPUT_FILE)
-    print("=" * 70)
-    print(f"✅ Done! Processed {success} rows.")
-    print("💾 Saved to Excel.")
+        # NEW CODE - TYPE THIS
+        if os.path.exists(absolute_path):
+            grammar_result = generate_grammar_from_svg(absolute_path)
+            
+            # We grab the specific cell we are about to write to.
+            target_cell = sheet.cell(row=row, column=7)
+            
+            # We insert our grammar string.
+            target_cell.value = grammar_result
+            
+            # We force Excel to enable "Wrap Text" so the \n characters stack vertically.
+            target_cell.alignment = Alignment(wrap_text=True)
+        else:
+            sheet.cell(row=row, column=7).value = "SVG not found"
+
+    wb.save(excel_filename)
+    print("Pipeline complete. Bounding-Box grammar saved to Column G.")
 
 if __name__ == "__main__":
-    main_standalone()
+    process_railroad_diagrams("railroad_diagrams.xlsx", "redlinesSVGs")
