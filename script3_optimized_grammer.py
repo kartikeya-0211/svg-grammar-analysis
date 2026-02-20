@@ -1,280 +1,161 @@
-"""
-script3_optimized_regex.py (v2)
-------------------------------------------------------------------------
-1. Opens 'railroad_diagrams_complete.xlsx'.
-2. Reads 'Command' (Col A) and 'Unoptimized Grammar' (Col F).
-3. Generates Regex.
-4. PREPENDS Command Name if missing from the diagram.
-5. Writes result to 'Optimized Regex' (Col G).
-"""
-
-import sys
 import os
 import re
+import openpyxl
+from openpyxl.styles import Alignment
 
-try:
-    from openpyxl import load_workbook
-    from openpyxl.styles import Alignment, Font
-    from openpyxl.utils import get_column_letter
-except ImportError:
-    print("❌ Error: openpyxl is missing. Run: pip install openpyxl")
-    sys.exit()
-
-INPUT_FILE = 'railroad_diagrams_complete.xlsx'
-COL_COMMAND = 1  # Column A
-COL_GRAMMAR = 6  # Column F
-COL_OUTPUT = 7   # Column G
-
-# Common CICS verbs to help split command names (e.g. "CHANGEPASSWORD" -> "CHANGE PASSWORD")
-KNOWN_VERBS = [
-    "CHANGE", "INQUIRE", "SET", "PERFORM", "DISABLE", "ENABLE", 
-    "EXTRACT", "ISSUE", "RESYNC", "RETRIEVE", "SEND", "RECEIVE", 
-    "START", "STOP", "SUSPEND", "WAIT", "WRITE", "REWRITE", 
-    "DELETE", "FREE", "POINT", "PROCESS", "PUT", "QUERY", 
-    "READ", "RELEASE", "RESET", "RESUME", "ROLLBACK", "SIGNAL", 
-    "SPOOL", "TEST", "UNLOCK", "VERIFY", "CONVERSE", "CONNECT"
-]
-
-def clean_label(label):
-    """Cleans up labels, removing spaces in parens."""
-    if not label: return ""
-    label = re.sub(r'\(\s+', '(', label)
-    label = re.sub(r'\s+\)', ')', label)
-    return label
-
-def format_command_name(cmd_raw):
-    """
-    Tries to format 'CHANGEPASSWORD' -> 'CHANGE PASSWORD' 
-    based on known verbs.
-    """
-    if not cmd_raw: return ""
-    cmd_upper = cmd_raw.upper().strip()
+def make_optional(r):
+    if not r: return ""
+    r = r.strip()
     
-    # Check if it starts with a known verb
-    for verb in KNOWN_VERBS:
-        if cmd_upper.startswith(verb) and len(cmd_upper) > len(verb):
-            # If the next char is not a space, insert one
-            suffix = cmd_upper[len(verb):]
-            if not suffix.startswith(" "):
-                return f"{verb} {suffix}"
-    return cmd_upper
+    if r.startswith('(') and r.endswith(')?'):
+        depth = 0
+        is_full = True
+        for i, c in enumerate(r[:-2]):
+            if c == '(': depth += 1
+            elif c == ')': depth -= 1
+            if depth == 0 and i > 0:
+                is_full = False
+                break
+        if is_full: return r
+        
+    return f"({r})?"
 
-def get_regex_from_grammar(input_data):
-    if not isinstance(input_data, str) or not input_data.strip():
-        return ""
+def combine_seq(r1, r2):
+    if r1 is None or r2 is None: return None
+    if r1 == "": return r2
+    if r2 == "": return r1
+    return f"{r1} {r2}"
 
-    adj = {}
-    all_nodes = set()
-    incoming = set()
+def make_star(r):
+    if r is None or r == "": return ""
+    r = r.strip()
+    if len(r.split()) == 1 and not r.startswith('('): return f"{r}*"
+    return f"({r})*"
 
-    # 1. Parse the Grammar
-    lines = input_data.strip().split('\n')
-    for line in lines:
-        line = line.strip()
-        if not line or '->' not in line: continue
+def combine_or(r1, r2):
+    if r1 is None: return r2
+    if r2 is None: return r1
+    if r1 == "" and r2 == "": return ""
+    
+    if r1 == "": return make_optional(r2)
+    if r2 == "": return make_optional(r1)
+    if r1 == r2: return r1
+    
+    p1, p2 = r1.split(), r2.split()
+    common = 0
+    while common < len(p1) and common < len(p2) and p1[common] == p2[common]:
+        common += 1
+        
+    if common > 0:
+        prefix = " ".join(p1[:common])
+        rest = combine_or(" ".join(p1[common:]), " ".join(p2[common:]))
+        if rest: return f"{prefix} {rest}".strip()
+        return prefix
+        
+    return f"({r1}|{r2})"
 
+def optimize_to_regex(grammar_text):
+    if not grammar_text or grammar_text.strip() == "n0 -> null": return "$"
+    
+    graph = {}
+    in_degree = {}
+    
+    for line in grammar_text.strip().split('\n'):
+        if '->' not in line: continue
         parts = line.split('->')
         src = parts[0].strip()
-        rhs = parts[1].strip()
+        right = parts[1].strip().split()
         
-        all_nodes.add(src)
-        rhs_tokens = rhs.split()
-        target = None
-        label = None
-        
-        # Case A: nX -> nY (Epsilon)
-        if len(rhs_tokens) == 1 and rhs_tokens[0].startswith('n') and rhs_tokens[0][1:].isdigit():
-            target = rhs_tokens[0]
-            label = None 
-        # Case B: nX -> null (End) -> Terminal '$'
-        elif rhs_tokens[0] == 'null':
-            target = "FINAL_STATE"
-            label = "$"
-        # Case C: nX -> LABEL (Terminal)
-        elif len(rhs_tokens) == 1:
-            target = "FINAL_STATE"
-            label = clean_label(rhs_tokens[0])
-        # Case D: nX -> LABEL nY (Standard)
+        if len(right) >= 2:
+            tgt = right[-1]
+            label = " ".join(right[:-1])
         else:
-            target = rhs_tokens[-1]
-            label = clean_label(" ".join(rhs_tokens[:-1]))
+            tgt, label = right[0], ""
+            
+        if label in ('null', '$'): label = ""
+            
+        if src not in graph: graph[src] = {}
+        
+        current_edge = graph[src].get(tgt, None)
+        graph[src][tgt] = combine_or(current_edge, label)
+            
+        in_degree[tgt] = in_degree.get(tgt, 0) + 1
+        if src not in in_degree: in_degree[src] = 0
 
-        if src not in adj: adj[src] = []
-        adj[src].append((target, label))
-        if target != "FINAL_STATE":
-            all_nodes.add(target)
-            incoming.add(target)
+    start_nodes = [n for n, deg in in_degree.items() if deg == 0 and n in graph]
+    if start_nodes:
+        start_nodes.sort(key=lambda x: int(x[1:]) if x[1:].isdigit() else 999)
+        true_start = start_nodes[0]
+    else:
+        true_start = 'n0'
+        
+    accept_nodes = ['null', '$']
+    for src, edges in graph.items():
+        if not edges: accept_nodes.append(src)
+        for tgt in list(edges.keys()):
+            if tgt not in graph and tgt not in accept_nodes:
+                accept_nodes.append(tgt)
 
-    # 2. Find Start Node
-    start_node = None
-    for node in all_nodes:
-        if node not in incoming:
-            start_node = node
-            break
-    if not start_node and all_nodes:
-        start_node = list(all_nodes)[0]
-
-    if not start_node: return ""
-
-    # 3. DFS Pathfinding
-    paths = []
-    stack = [(start_node, [], set())]
-    MAX_PATHS = 1000 
+    S, A = 'START', 'ACCEPT'
+    graph[S] = {true_start: ""}
     
-    while stack:
-        curr, path, visited = stack.pop()
-        
-        if curr == "FINAL_STATE":
-            paths.append(path)
-            if len(paths) > MAX_PATHS: break 
-            continue
-            
-        if curr not in adj or not adj[curr]:
-            if path: paths.append(path)
-            continue
-            
-        if curr in visited: continue
-        visited.add(curr)
+    for n in list(graph.keys()):
+        for tgt in list(graph[n].keys()):
+            if tgt in accept_nodes:
+                label = graph[n].pop(tgt)
+                graph[n][A] = combine_or(graph.get(n, {}).get(A, None), label)
 
-        for target, label in adj[curr]:
-            new_path = list(path)
-            if label: new_path.append(label)
-            stack.append((target, new_path, visited.copy()))
-
-    # 4. Simplify / Regex Construction
-    def simplify(path_list):
-        if not path_list: return ""
-        if len(path_list) == 1: return "".join(path_list[0])
-
-        # Prefix
-        prefix = []
-        while path_list and all(p for p in path_list):
-            if all(p[0] == path_list[0][0] for p in path_list):
-                prefix.append(path_list[0][0])
-                for p in path_list: p.pop(0)
-            else: break
-        
-        # Suffix
-        suffix = []
-        while path_list and all(p for p in path_list):
-            if all(p[-1] == path_list[0][-1] for p in path_list):
-                suffix.insert(0, path_list[0][-1])
-                for p in path_list: p.pop()
-            else: break
-
-        # Middle
-        middles = []
-        has_empty = False
-        for p in path_list:
-            if not p: has_empty = True
-            else: middles.append(simplify([p]))
-        
-        middles = sorted(list(set(middles)))
-        middle_str = ""
-        if middles:
-            if len(middles) > 1: middle_str = "(" + "|".join(middles) + ")"
-            else: middle_str = middles[0]
-            if has_empty and ("|" in middle_str or len(middles[0]) > 4):
-                 middle_str = f"({middle_str})"
-
-        if has_empty:
-            if middle_str:
-                if not (middle_str.startswith("(") and middle_str.endswith(")")):
-                    middle_str = f"({middle_str})"
-                middle_str += "?"
-            
-        return "".join(prefix) + middle_str + "".join(suffix)
-
-    return simplify(paths)
-
-def main():
-    print("=" * 60)
-    print("      SCRIPT 3: OPTIMIZED REGEX GENERATOR (V2)")
-    print("=" * 60)
-
-    if not os.path.exists(INPUT_FILE):
-        print(f"❌ File not found: {INPUT_FILE}")
-        return
-
-    print(f"📂 Loading {INPUT_FILE}...")
-    wb = load_workbook(INPUT_FILE)
-    ws = wb.active
-
-    # Setup Column G
-    output_col_letter = get_column_letter(COL_OUTPUT)
-    ws.column_dimensions[output_col_letter].width = 43
-    header_cell = ws.cell(row=1, column=COL_OUTPUT)
-    header_cell.value = "Optimized Regex"
-    header_cell.font = Font(bold=True)
-    header_cell.alignment = Alignment(horizontal='center')
-
-    row_idx = 2
-    count = 0
+    nodes_to_remove = [n for n in graph.keys() if n not in (S, A)]
     
-    while True:
-        # Check if row exists
-        cmd_cell = ws.cell(row=row_idx, column=COL_COMMAND)
-        if not cmd_cell.value: break
+    for node in nodes_to_remove:
+        in_edges = [(s, graph[s][node]) for s in graph if node in graph[s]]
+        out_edges = [(t, l) for t, l in graph.get(node, {}).items() if t != node]
+        loop_regex = make_star(graph.get(node, {}).get(node, None))
         
-        cmd_name_raw = str(cmd_cell.value).strip()
-        grammar_text = ws.cell(row=row_idx, column=COL_GRAMMAR).value
-        
-        if not grammar_text:
-            row_idx += 1
-            continue
-
-        # 1. Generate Basic Regex
-        regex = get_regex_from_grammar(grammar_text)
-        
-        # 2. Check for missing Command Name
-        # Logic: If the regex doesn't start with the command (or the command's prefix), prepend it.
-        
-        # Format "CHANGEPASSWORD" -> "CHANGE PASSWORD"
-        nice_cmd_name = format_command_name(cmd_name_raw)
-        
-        # Determine the first word of the generated regex to compare
-        # (Remove optional parens like '(TCTUA...' -> 'TCTUA')
-        first_token = regex.lstrip('(').split(' ')[0].split('(')[0]
-        
-        # Does the Regex already contain the command?
-        # e.g. cmd="CHANGE", regex="CHANGE TASK..." -> Yes.
-        # e.g. cmd="ADDRESS", regex="TCTUA..." -> No.
-        
-        # We check if the Command starts with the First Token (e.g. ALLOCATE starts with ALLOCATE)
-        # OR if the First Token starts with the Command (rare, but possible)
-        # If neither, we assume the command is missing.
-        
-        starts_with_cmd = False
-        if first_token and nice_cmd_name:
-            # Check overlap
-            if nice_cmd_name.startswith(first_token) or first_token.startswith(nice_cmd_name.split(' ')[0]):
-                starts_with_cmd = True
+        for src, in_label in in_edges:
+            for tgt, out_label in out_edges:
+                path_regex = combine_seq(in_label, combine_seq(loop_regex, out_label))
+                current_edge = graph[src].get(tgt, None)
+                graph[src][tgt] = combine_or(current_edge, path_regex)
                 
-        # Special fix: "ADDRESS" vs "TCTUA" -> starts_with_cmd = False
+        for src in graph:
+            if node in graph[src]: del graph[src][node]
+        if node in graph: del graph[node]
+            
+    final_regex = graph.get(S, {}).get(A, "")
+    
+    if final_regex:
+        final_regex = final_regex.replace(" (", "(")
+        if final_regex.endswith(' '): final_regex = final_regex.strip()
         
-        if not starts_with_cmd and regex:
-            # Prepend the formatted command name
-            if regex == "$": 
-                 # If regex is just End of Line, it means "COMMAND_NAME" is the only thing.
-                regex = f"{nice_cmd_name}$"
-            else:
-                regex = f"{nice_cmd_name} {regex}"
-
-        # Write result
-        out_cell = ws.cell(row=row_idx, column=COL_OUTPUT)
-        out_cell.value = regex
-        out_cell.alignment = Alignment(wrap_text=True, vertical='top')
-
-        print(f"Row {row_idx}: {regex[:60]}...")
+    if not final_regex.endswith('$'): 
+        final_regex += '$'
         
-        row_idx += 1
-        count += 1
+    return final_regex
 
-    print(f"\n💾 Saving updates to {INPUT_FILE}...")
-    wb.save(INPUT_FILE)
-    print(f"✅ Done! Processed {count} rows.")
+def process_script3_optimization(excel_filename):
+    print("Starting Script 3: Optimizing Grammar to Regex")
+    if not os.path.exists(excel_filename):
+        print(f"Excel file '{excel_filename}' not found.")
+        return
+        
+    wb = openpyxl.load_workbook(excel_filename)
+    sheet = wb.active
+    
+    sheet.cell(row=1, column=8, value="Optimized Regex")
+
+    for row in range(2, sheet.max_row + 1):
+        raw_grammar = sheet.cell(row=row, column=7).value
+        if not raw_grammar or raw_grammar == "SVG not found":
+            continue
+            
+        optimized = optimize_to_regex(raw_grammar)
+        target_cell = sheet.cell(row=row, column=8)
+        target_cell.value = optimized
+        target_cell.alignment = Alignment(wrap_text=True, vertical='top')
+
+    wb.save(excel_filename)
+    print("Optimization complete. Minimal Regex saved to Column H.")
 
 if __name__ == "__main__":
-    main()
-    
-    
+    process_script3_optimization('railroad_diagrams.xlsx')
