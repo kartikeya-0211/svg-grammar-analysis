@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="430.9px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 430.9 61.80958349227905" height="61.80958349227905px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="17.11">EXTRACT LOGONMSG</text><rect rx="3" x="15.0" width="116.83959922790528" height="15.70138931274414" y="5.53" class="syntaxgroupcomp" /><text class="syntaxkwd" x="170.84" y="17.11">INTO(</text><text class="syntaxvar" x="200.7" y="17.11"> data-area</text><text class="syntaxdelim" x="251.96" y="17.11">)</text><rect rx="3" x="166.84" width="91.99914170503617" height="17.56944465637207" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="182.72" y="40.68">SET(</text><text class="syntaxvar" x="205.49" y="40.68"> ptr-ref</text><text class="syntaxdelim" x="240.09" y="40.68">)</text><rect rx="3" x="178.72" width="68.24679900407791" height="18.239583492279053" y="28.57" class="syntaxgroupcomp" /><line y2="14.11" x1="146.84" x2="166.84" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadStartChoice" points="166.84,14.11 161.84,16.61 161.84,11.61" /><line y2="14.11" x1="258.84" x2="278.84" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadAfterChoice" points="273.84,14.11 268.84,16.61 268.84,11.61" /><path class="syntaxarrow" d="M 146.84,14.11 151.84,14.11 151.84,19.11 151.84,32.68 151.84,37.68 156.84,37.68 178.72,37.68" /><polygon class="arrowheadStartChoice" points="178.72,37.68 173.72,40.18 173.72,35.18" /><path class="syntaxarrow" d="M 246.96,37.68 268.84,37.68 273.84,37.68 273.84,32.68 273.84,19.11 273.84,14.11 278.84,14.11" /><polygon class="arrowheadAfterChoice" points="273.84,19.11 268.84,21.61 268.84,16.61" /><text class="syntaxkwd" x="297.84" y="17.11">LENGTH(</text><text class="syntaxvar" x="342.76" y="17.11"> data-area</text><text class="syntaxdelim" x="394.02" y="17.11">)</text><rect rx="3" x="293.84" width="107.05729342699051" height="17.56944465637207" y="5.0" class="syntaxgroupcomp" /><polygon class="arrowheadStartEnd" points="5.0,14.11 0.0,16.61 0.0,11.61" /><polygon class="arrowheadStartEnd" points="10.0,14.11 5.0,16.61 5.0,11.61" /><line y2="14.11" x1="5.0" x2="15.0" class="syntaxarrow" y1="14.11" /><line y2="14.11" x1="131.84" x2="146.84" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="146.84,14.11 141.84,16.61 141.84,11.61" /><line y2="14.11" x1="278.84" x2="293.84" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="293.84,14.11 288.84,16.61 288.84,11.61" /><line y2="14.11" x1="400.9" x2="410.9" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadStartEnd" points="410.9,14.11 405.9,16.61 405.9,11.61" /><polygon class="arrowheadStartEnd" points="410.9,14.11 405.9,16.61 405.9,11.61" /></svg>

@@ -70,12 +70,10 @@ def prepare_excel():
         "URL",                      # B
         "Raw SVG Code",             # C
         "Raw SVG Image",            # D
-        "Simplified SVG Code",      # E
-        "Simplified SVG Image",     # F
-        "Connected SVG Code",       # G
-        "Connected SVG Image",      # H
-        "Unoptimized Grammar",      # I
-        "Optimized Regex"           # J
+        "Connected SVG Code",       # E
+        "Connected SVG Image",      # F
+        "Unoptimized Grammar",      # G
+        "Optimized Regex"           # H
     ]
     
     # Apply Headers
@@ -90,12 +88,12 @@ def prepare_excel():
     ws.column_dimensions['B'].width = 40
     
     # Code Columns (Width 50)
-    code_cols = ['C', 'E', 'G', 'I', 'J']
+    code_cols = ['C', 'E', 'G', 'H']
     for col_letter in code_cols:
         ws.column_dimensions[col_letter].width = 50
         
     # Image Columns (Width 90)
-    image_cols = ['D', 'F', 'H']
+    image_cols = ['D', 'F']
     for col_letter in image_cols:
         ws.column_dimensions[col_letter].width = 90
     
@@ -103,7 +101,7 @@ def prepare_excel():
 
 def main():
     print("=" * 60)
-    print("SCRIPT 0: DOWNLOAD SVGs + UPDATE EXCEL")
+    print("SCRIPT 0: DOWNLOAD SVGs + UPDATE EXCEL (FIXED HEIGHT)")
     print("=" * 60)
 
     # 1. Setup Folders
@@ -134,12 +132,12 @@ def main():
             current_row = i + 1
             
             # --- CHECK: Is this row already filled in Excel? ---
-            # We check Column 1 (Command) and Column 3 (SVG Code)
             excel_has_cmd = ws.cell(row=current_row, column=1).value
             excel_has_svg = ws.cell(row=current_row, column=3).value
             
+            # If done, just ensure height is fixed and skip
             if excel_has_cmd and excel_has_svg:
-                # OPTIONAL: Uncomment to see skipped items
+                ws.row_dimensions[current_row].height = 150 # Fix height even if skipping
                 # print(f"[{i}] {cmd_name} - Skipped (Done)")
                 continue
 
@@ -168,8 +166,12 @@ def main():
             
             if svg_content:
                 cell = ws.cell(row=current_row, column=3, value=svg_content)
-                # CRITICAL: This makes the text wrap and go DOWN
+                # Text wrap enabled
                 cell.alignment = Alignment(wrap_text=True, vertical='top')
+                
+                # CRITICAL FIX: Force row height to 150
+                ws.row_dimensions[current_row].height = 150
+                
                 print("| ✅ Excel Updated")
             else:
                 print("| ⚠️  No Data")

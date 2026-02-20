@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="511.39px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 511.39 57.67944465637207" height="57.67944465637207px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="17.11">RETRIEVE </text><rect rx="3" x="15.0" width="57.86070861816406" height="15.44444465637207" y="5.66" class="syntaxgroupcomp" /><text class="syntaxkwd" x="91.86" y="17.11">SUBEVENT(</text><text class="syntaxvar" x="150.8" y="17.11"> data-area</text><text class="syntaxdelim" x="202.06" y="17.11">)</text><rect rx="3" x="87.86" width="121.07777987718583" height="17.56944465637207" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="227.94" y="17.11">EVENT(</text><text class="syntaxvar" x="264.9" y="17.11"> data-value</text><text class="syntaxdelim" x="320.46" y="17.11">)</text><rect rx="3" x="223.94" width="103.39441386461257" height="17.56944465637207" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="366.33" y="37.22">EVENTTYPE(</text><text class="syntaxvar" x="429.65" y="37.22"> cvda</text><text class="syntaxdelim" x="454.52" y="37.22">)</text><rect rx="3" x="362.33" width="99.0618280529976" height="17.56944465637207" y="25.11" class="syntaxgroupcomp" /><line y2="14.11" x1="342.33" x2="411.86" class="syntaxarrow" y1="14.11" /><line y2="14.11" x1="411.86" x2="481.39" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadAfterChoice" points="476.39,14.11 471.39,16.61 471.39,11.61" /><path class="syntaxarrow" d="M 342.33,14.11 347.33,14.11 347.33,19.11 347.33,29.22 347.33,34.22 352.33,34.22 362.33,34.22" /><polygon class="arrowheadStartChoice" points="362.33,34.22 357.33,36.72 357.33,31.72" /><path class="syntaxarrow" d="M 461.39,34.22 471.39,34.22 476.39,34.22 476.39,29.22 476.39,19.11 476.39,14.11 481.39,14.11" /><polygon class="arrowheadAfterChoice" points="476.39,19.11 471.39,21.61 471.39,16.61" /><polygon class="arrowheadStartEnd" points="5.0,14.11 0.0,16.61 0.0,11.61" /><polygon class="arrowheadStartEnd" points="10.0,14.11 5.0,16.61 5.0,11.61" /><line y2="14.11" x1="5.0" x2="15.0" class="syntaxarrow" y1="14.11" /><line y2="14.11" x1="72.86" x2="87.86" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="87.86,14.11 82.86,16.61 82.86,11.61" /><line y2="14.11" x1="208.94" x2="223.94" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="223.94,14.11 218.94,16.61 218.94,11.61" /><line y2="14.11" x1="327.33" x2="342.33" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="342.33,14.11 337.33,16.61 337.33,11.61" /><line y2="14.11" x1="481.39" x2="491.39" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadStartEnd" points="491.39,14.11 486.39,16.61 486.39,11.61" /><polygon class="arrowheadStartEnd" points="491.39,14.11 486.39,16.61 486.39,11.61" /></svg>

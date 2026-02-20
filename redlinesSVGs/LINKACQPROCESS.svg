@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="361.35px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 361.35 57.13944465637207" height="57.13944465637207px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="16.57">LINK</text><rect rx="3" x="15.0" width="31.816892242431642" height="15.44444465637207" y="5.13" class="syntaxgroupcomp" /><text class="syntaxkwd" x="65.82" y="16.57">ACQPROCESS</text><rect rx="3" x="61.82" width="77.59162750244141" height="17.322916984558105" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="178.41" y="36.68">INPUTEVENT(</text><text class="syntaxvar" x="248.92" y="36.68"> data-value</text><text class="syntaxdelim" x="304.48" y="36.68">)</text><rect rx="3" x="174.41" width="136.944213783741" height="17.56944465637207" y="24.57" class="syntaxgroupcomp" /><line y2="13.57" x1="154.41" x2="242.88" class="syntaxarrow" y1="13.57" /><line y2="13.57" x1="242.88" x2="331.35" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadAfterChoice" points="326.35,13.57 321.35,16.07 321.35,11.07" /><path class="syntaxarrow" d="M 154.41,13.57 159.41,13.57 159.41,18.57 159.41,28.68 159.41,33.68 164.41,33.68 174.41,33.68" /><polygon class="arrowheadStartChoice" points="174.41,33.68 169.41,36.18 169.41,31.18" /><path class="syntaxarrow" d="M 311.35,33.68 321.35,33.68 326.35,33.68 326.35,28.68 326.35,18.57 326.35,13.57 331.35,13.57" /><polygon class="arrowheadAfterChoice" points="326.35,18.57 321.35,21.07 321.35,16.07" /><polygon class="arrowheadStartEnd" points="5.0,13.57 0.0,16.07 0.0,11.07" /><polygon class="arrowheadStartEnd" points="10.0,13.57 5.0,16.07 5.0,11.07" /><line y2="13.57" x1="5.0" x2="15.0" class="syntaxarrow" y1="13.57" /><line y2="13.57" x1="46.82" x2="61.82" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadSeq" points="61.82,13.57 56.82,16.07 56.82,11.07" /><line y2="13.57" x1="139.41" x2="154.41" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadSeq" points="154.41,13.57 149.41,16.07 149.41,11.07" /><line y2="13.57" x1="331.35" x2="341.35" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadStartEnd" points="341.35,13.57 336.35,16.07 336.35,11.07" /><polygon class="arrowheadStartEnd" points="341.35,13.57 336.35,16.07 336.35,11.07" /></svg>

@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="297.26px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 297.26 61.80958349227905" height="61.80958349227905px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="17.11">FREEMAIN</text><rect rx="3" x="15.0" width="61.06399688720703" height="15.44444465637207" y="5.66" class="syntaxgroupcomp" /><text class="syntaxkwd" x="136.57" y="17.11">DATA(</text><text class="syntaxvar" x="167.61" y="17.11"> data-area</text><text class="syntaxdelim" x="218.87" y="17.11">)</text><rect rx="3" x="132.57" width="93.17250901460648" height="17.56944465637207" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="115.06" y="40.68">DATAPOINTER(</text><text class="syntaxvar" x="193.31" y="40.68"> ptr-value</text><text class="syntaxdelim" x="240.38" y="40.68">)</text><rect rx="3" x="111.06" width="136.19190551042558" height="18.239583492279053" y="28.57" class="syntaxgroupcomp" /><line y2="14.11" x1="91.06" x2="132.57" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadStartChoice" points="132.57,14.11 127.57,16.61 127.57,11.61" /><line y2="14.11" x1="225.75" x2="267.26" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadAfterChoice" points="262.26,14.11 257.26,16.61 257.26,11.61" /><path class="syntaxarrow" d="M 91.06,14.11 96.06,14.11 96.06,19.11 96.06,32.68 96.06,37.68 101.06,37.68 111.06,37.68" /><polygon class="arrowheadStartChoice" points="111.06,37.68 106.06,40.18 106.06,35.18" /><path class="syntaxarrow" d="M 247.26,37.68 257.26,37.68 262.26,37.68 262.26,32.68 262.26,19.11 262.26,14.11 267.26,14.11" /><polygon class="arrowheadAfterChoice" points="262.26,19.11 257.26,21.61 257.26,16.61" /><polygon class="arrowheadStartEnd" points="5.0,14.11 0.0,16.61 0.0,11.61" /><polygon class="arrowheadStartEnd" points="10.0,14.11 5.0,16.61 5.0,11.61" /><line y2="14.11" x1="5.0" x2="15.0" class="syntaxarrow" y1="14.11" /><line y2="14.11" x1="76.06" x2="91.06" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="91.06,14.11 86.06,16.61 86.06,11.61" /><line y2="14.11" x1="267.26" x2="277.26" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadStartEnd" points="277.26,14.11 272.26,16.61 272.26,11.61" /><polygon class="arrowheadStartEnd" points="277.26,14.11 272.26,16.61 272.26,11.61" /></svg>

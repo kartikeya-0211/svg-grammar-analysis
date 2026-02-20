@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="251.89px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 251.89 37.322916984558105" height="37.322916984558105px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="16.57">WEB</text><rect rx="3" x="15.0" width="30.888833618164064" height="15.44444465637207" y="5.13" class="syntaxgroupcomp" /><text class="syntaxkwd" x="64.89" y="16.57">ENDBROWSE</text><rect rx="3" x="60.89" width="73.61546306610107" height="15.70138931274414" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="153.5" y="16.57">QUERYPARM</text><rect rx="3" x="149.5" width="72.38829879760742" height="17.322916984558105" y="5.0" class="syntaxgroupcomp" /><polygon class="arrowheadStartEnd" points="5.0,13.57 0.0,16.07 0.0,11.07" /><polygon class="arrowheadStartEnd" points="10.0,13.57 5.0,16.07 5.0,11.07" /><line y2="13.57" x1="5.0" x2="15.0" class="syntaxarrow" y1="13.57" /><line y2="13.57" x1="45.89" x2="60.89" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadSeq" points="60.89,13.57 55.89,16.07 55.89,11.07" /><line y2="13.57" x1="134.5" x2="149.5" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadSeq" points="149.5,13.57 144.5,16.07 144.5,11.07" /><line y2="13.57" x1="221.89" x2="231.89" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadStartEnd" points="231.89,13.57 226.89,16.07 226.89,11.07" /><polygon class="arrowheadStartEnd" points="231.89,13.57 226.89,16.07 226.89,11.07" /></svg>

@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="374.74px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 374.74 58.34958349227905" height="58.34958349227905px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="17.11">DELETEQ TD</text><rect rx="3" x="15.0" width="69.91021003723145" height="17.322916984558105" y="5.53" class="syntaxgroupcomp" /><text class="syntaxkwd" x="103.91" y="17.11">QUEUE(</text><text class="syntaxvar" x="143.24" y="17.11"> name</text><text class="syntaxdelim" x="172.61" y="17.11">)</text><rect rx="3" x="99.91" width="79.57911578416824" height="17.85763931274414" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="218.49" y="37.22">SYSID(</text><text class="syntaxvar" x="253.47" y="37.22"> systemname</text><text class="syntaxdelim" x="317.86" y="37.22">)</text><rect rx="3" x="214.49" width="110.24987918138504" height="18.239583492279053" y="25.11" class="syntaxgroupcomp" /><line y2="14.11" x1="194.49" x2="269.61" class="syntaxarrow" y1="14.11" /><line y2="14.11" x1="269.61" x2="344.74" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadAfterChoice" points="339.74,14.11 334.74,16.61 334.74,11.61" /><path class="syntaxarrow" d="M 194.49,14.11 199.49,14.11 199.49,19.11 199.49,29.22 199.49,34.22 204.49,34.22 214.49,34.22" /><polygon class="arrowheadStartChoice" points="214.49,34.22 209.49,36.72 209.49,31.72" /><path class="syntaxarrow" d="M 324.74,34.22 334.74,34.22 339.74,34.22 339.74,29.22 339.74,19.11 339.74,14.11 344.74,14.11" /><polygon class="arrowheadAfterChoice" points="339.74,19.11 334.74,21.61 334.74,16.61" /><polygon class="arrowheadStartEnd" points="5.0,14.11 0.0,16.61 0.0,11.61" /><polygon class="arrowheadStartEnd" points="10.0,14.11 5.0,16.61 5.0,11.61" /><line y2="14.11" x1="5.0" x2="15.0" class="syntaxarrow" y1="14.11" /><line y2="14.11" x1="84.91" x2="99.91" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="99.91,14.11 94.91,16.61 94.91,11.61" /><line y2="14.11" x1="179.49" x2="194.49" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="194.49,14.11 189.49,16.61 189.49,11.61" /><line y2="14.11" x1="344.74" x2="354.74" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadStartEnd" points="354.74,14.11 349.74,16.61 349.74,11.61" /><polygon class="arrowheadStartEnd" points="354.74,14.11 349.74,16.61 349.74,11.61" /></svg>

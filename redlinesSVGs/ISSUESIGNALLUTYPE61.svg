@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="270.71000000000004px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 270.71000000000004 80.70944465637207" height="80.70944465637207px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="16.57">ISSUE SIGNAL</text><rect rx="3" x="15.0" width="80.75134468078613" height="15.70138931274414" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="137.22" y="36.68">CONVID(</text><text class="syntaxvar" x="181.99" y="36.68"> name</text><text class="syntaxdelim" x="211.36" y="36.68">)</text><rect rx="3" x="133.22" width="85.02105609178543" height="17.56944465637207" y="24.57" class="syntaxgroupcomp" /><text class="syntaxkwd" x="134.75" y="60.25">SESSION(</text><text class="syntaxvar" x="184.46" y="60.25"> name</text><text class="syntaxdelim" x="213.83" y="60.25">)</text><rect rx="3" x="130.75" width="89.95860034227371" height="17.56944465637207" y="48.14" class="syntaxgroupcomp" /><line y2="13.57" x1="110.75" x2="175.73" class="syntaxarrow" y1="13.57" /><line y2="13.57" x1="175.73" x2="240.71" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadAfterChoice" points="235.71,13.57 230.71,16.07 230.71,11.07" /><path class="syntaxarrow" d="M 110.75,13.57 115.75,13.57 115.75,18.57 115.75,28.68 115.75,33.68 120.75,33.68 133.22,33.68" /><polygon class="arrowheadStartChoice" points="133.22,33.68 128.22,36.18 128.22,31.18" /><path class="syntaxarrow" d="M 218.24,33.68 230.71,33.68 235.71,33.68 235.71,28.68 235.71,18.57 235.71,13.57 240.71,13.57" /><polygon class="arrowheadAfterChoice" points="235.71,18.57 230.71,21.07 230.71,16.07" /><path class="syntaxarrow" d="M 110.75,13.57 115.75,13.57 115.75,18.57 115.75,52.25 115.75,57.25 120.75,57.25 130.75,57.25" /><polygon class="arrowheadStartChoice" points="130.75,57.25 125.75,59.75 125.75,54.75" /><path class="syntaxarrow" d="M 220.71,57.25 230.71,57.25 235.71,57.25 235.71,52.25 235.71,18.57 235.71,13.57 240.71,13.57" /><polygon class="arrowheadAfterChoice" points="235.71,18.57 230.71,21.07 230.71,16.07" /><polygon class="arrowheadStartEnd" points="5.0,13.57 0.0,16.07 0.0,11.07" /><polygon class="arrowheadStartEnd" points="10.0,13.57 5.0,16.07 5.0,11.07" /><line y2="13.57" x1="5.0" x2="15.0" class="syntaxarrow" y1="13.57" /><line y2="13.57" x1="95.75" x2="110.75" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadSeq" points="110.75,13.57 105.75,16.07 105.75,11.07" /><line y2="13.57" x1="240.71" x2="250.71" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadStartEnd" points="250.71,13.57 245.71,16.07 245.71,11.07" /><polygon class="arrowheadStartEnd" points="250.71,13.57 245.71,16.07 245.71,11.07" /></svg>

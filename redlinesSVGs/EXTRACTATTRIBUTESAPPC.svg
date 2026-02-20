@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="394.61px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 394.61 57.67944465637207" height="57.67944465637207px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="17.11">EXTRACT ATTRIBUTES</text><rect rx="3" x="15.0" width="122.49319458007812" height="15.70138931274414" y="5.53" class="syntaxgroupcomp" /><text class="syntaxkwd" x="176.49" y="37.22">CONVID(</text><text class="syntaxvar" x="221.26" y="37.22"> name</text><text class="syntaxdelim" x="250.64" y="37.22">)</text><rect rx="3" x="172.49" width="85.02105609178543" height="17.56944465637207" y="25.11" class="syntaxgroupcomp" /><line y2="14.11" x1="152.49" x2="215.0" class="syntaxarrow" y1="14.11" /><line y2="14.11" x1="215.0" x2="277.51" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadAfterChoice" points="272.51,14.11 267.51,16.61 267.51,11.61" /><path class="syntaxarrow" d="M 152.49,14.11 157.49,14.11 157.49,19.11 157.49,29.22 157.49,34.22 162.49,34.22 172.49,34.22" /><polygon class="arrowheadStartChoice" points="172.49,34.22 167.49,36.72 167.49,31.72" /><path class="syntaxarrow" d="M 257.51,34.22 267.51,34.22 272.51,34.22 272.51,29.22 272.51,19.11 272.51,14.11 277.51,14.11" /><polygon class="arrowheadAfterChoice" points="272.51,19.11 267.51,21.61 267.51,16.61" /><text class="syntaxkwd" x="296.51" y="17.11">STATE(</text><text class="syntaxvar" x="332.87" y="17.11"> cvda</text><text class="syntaxdelim" x="357.74" y="17.11">)</text><rect rx="3" x="292.51" width="72.09979439973831" height="17.56944465637207" y="5.0" class="syntaxgroupcomp" /><polygon class="arrowheadStartEnd" points="5.0,14.11 0.0,16.61 0.0,11.61" /><polygon class="arrowheadStartEnd" points="10.0,14.11 5.0,16.61 5.0,11.61" /><line y2="14.11" x1="5.0" x2="15.0" class="syntaxarrow" y1="14.11" /><line y2="14.11" x1="137.49" x2="152.49" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="152.49,14.11 147.49,16.61 147.49,11.61" /><line y2="14.11" x1="277.51" x2="292.51" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="292.51,14.11 287.51,16.61 287.51,11.61" /><line y2="14.11" x1="364.61" x2="374.61" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadStartEnd" points="374.61,14.11 369.61,16.61 369.61,11.61" /><polygon class="arrowheadStartEnd" points="374.61,14.11 369.61,16.61 369.61,11.61" /></svg>

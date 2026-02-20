@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="408.79px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 408.79 37.56944465637207" height="37.56944465637207px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="17.11">GETNEXT</text><rect rx="3" x="15.0" width="55.53637638092041" height="15.70138931274414" y="5.53" class="syntaxgroupcomp" /><text class="syntaxkwd" x="89.54" y="17.11">CONTAINER(</text><text class="syntaxvar" x="155.16" y="17.11"> data-area</text><text class="syntaxdelim" x="206.42" y="17.11">)</text><rect rx="3" x="85.54" width="127.76314650774003" height="17.56944465637207" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="232.3" y="17.11">BROWSETOKEN(</text><text class="syntaxvar" x="316.36" y="17.11"> data-value</text><text class="syntaxdelim" x="371.91" y="17.11">)</text><rect rx="3" x="228.3" width="150.49071341753006" height="17.56944465637207" y="5.0" class="syntaxgroupcomp" /><polygon class="arrowheadStartEnd" points="5.0,14.11 0.0,16.61 0.0,11.61" /><polygon class="arrowheadStartEnd" points="10.0,14.11 5.0,16.61 5.0,11.61" /><line y2="14.11" x1="5.0" x2="15.0" class="syntaxarrow" y1="14.11" /><line y2="14.11" x1="70.54" x2="85.54" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="85.54,14.11 80.54,16.61 80.54,11.61" /><line y2="14.11" x1="213.3" x2="228.3" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="228.3,14.11 223.3,16.61 223.3,11.61" /><line y2="14.11" x1="378.79" x2="388.79" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadStartEnd" points="388.79,14.11 383.79,16.61 383.79,11.61" /><polygon class="arrowheadStartEnd" points="388.79,14.11 383.79,16.61 383.79,11.61" /></svg>

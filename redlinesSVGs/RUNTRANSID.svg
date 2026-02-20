@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="440.76px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 440.76 57.67944465637207" height="57.67944465637207px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="17.11">RUN</text><rect rx="3" x="15.0" width="28.591518020629884" height="15.572916984558105" y="5.66" class="syntaxgroupcomp" /><text class="syntaxkwd" x="62.59" y="17.11">TRANSID(</text><text class="syntaxvar" x="113.31" y="17.11"> name</text><text class="syntaxdelim" x="142.69" y="17.11">)</text><rect rx="3" x="58.59" width="90.97601214647294" height="17.56944465637207" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="188.57" y="37.22">CHANNEL(</text><text class="syntaxvar" x="241.74" y="37.22"> name</text><text class="syntaxdelim" x="271.12" y="37.22">)</text><rect rx="3" x="184.57" width="93.4303086400032" height="17.56944465637207" y="25.11" class="syntaxgroupcomp" /><line y2="14.11" x1="164.57" x2="231.28" class="syntaxarrow" y1="14.11" /><line y2="14.11" x1="231.28" x2="298.0" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadAfterChoice" points="293.0,14.11 288.0,16.61 288.0,11.61" /><path class="syntaxarrow" d="M 164.57,14.11 169.57,14.11 169.57,19.11 169.57,29.22 169.57,34.22 174.57,34.22 184.57,34.22" /><polygon class="arrowheadStartChoice" points="184.57,34.22 179.57,36.72 179.57,31.72" /><path class="syntaxarrow" d="M 278.0,34.22 288.0,34.22 293.0,34.22 293.0,29.22 293.0,19.11 293.0,14.11 298.0,14.11" /><polygon class="arrowheadAfterChoice" points="293.0,19.11 288.0,21.61 288.0,16.61" /><text class="syntaxkwd" x="317.0" y="17.11">CHILD(</text><text class="syntaxvar" x="352.63" y="17.11"> data-area</text><text class="syntaxdelim" x="403.89" y="17.11">)</text><rect rx="3" x="313.0" width="97.76528769731522" height="17.56944465637207" y="5.0" class="syntaxgroupcomp" /><polygon class="arrowheadStartEnd" points="5.0,14.11 0.0,16.61 0.0,11.61" /><polygon class="arrowheadStartEnd" points="10.0,14.11 5.0,16.61 5.0,11.61" /><line y2="14.11" x1="5.0" x2="15.0" class="syntaxarrow" y1="14.11" /><line y2="14.11" x1="43.59" x2="58.59" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="58.59,14.11 53.59,16.61 53.59,11.61" /><line y2="14.11" x1="149.57" x2="164.57" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="164.57,14.11 159.57,16.61 159.57,11.61" /><line y2="14.11" x1="298.0" x2="313.0" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="313.0,14.11 308.0,16.61 308.0,11.61" /><line y2="14.11" x1="410.76" x2="420.76" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadStartEnd" points="420.76,14.11 415.76,16.61 415.76,11.61" /><polygon class="arrowheadStartEnd" points="420.76,14.11 415.76,16.61 415.76,11.61" /></svg>

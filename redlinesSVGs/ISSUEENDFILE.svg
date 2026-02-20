@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="257.08000000000004px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 257.08000000000004 55.27138931274414" height="55.27138931274414px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="16.57">ISSUE ENDFILE</text><rect rx="3" x="15.0" width="85.69983177185058" height="15.70138931274414" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="139.7" y="36.15">ENDOUTPUT</text><rect rx="3" x="135.7" width="71.37886981964112" height="15.70138931274414" y="24.57" class="syntaxkwd" /><line y2="13.57" x1="115.7" x2="171.39" class="syntaxarrow" y1="13.57" /><line y2="13.57" x1="171.39" x2="227.08" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadAfterChoice" points="222.08,13.57 217.08,16.07 217.08,11.07" /><path class="syntaxarrow" d="M 115.7,13.57 120.7,13.57 120.7,18.57 120.7,28.15 120.7,33.15 125.7,33.15 135.7,33.15" /><polygon class="arrowheadStartChoice" points="135.7,33.15 130.7,35.65 130.7,30.65" /><path class="syntaxarrow" d="M 207.08,33.15 217.08,33.15 222.08,33.15 222.08,28.15 222.08,18.57 222.08,13.57 227.08,13.57" /><polygon class="arrowheadAfterChoice" points="222.08,18.57 217.08,21.07 217.08,16.07" /><polygon class="arrowheadStartEnd" points="5.0,13.57 0.0,16.07 0.0,11.07" /><polygon class="arrowheadStartEnd" points="10.0,13.57 5.0,16.07 5.0,11.07" /><line y2="13.57" x1="5.0" x2="15.0" class="syntaxarrow" y1="13.57" /><line y2="13.57" x1="100.7" x2="115.7" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadSeq" points="115.7,13.57 110.7,16.07 110.7,11.07" /><line y2="13.57" x1="227.08" x2="237.08" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadStartEnd" points="237.08,13.57 232.08,16.07 232.08,11.07" /><polygon class="arrowheadStartEnd" points="237.08,13.57 232.08,16.07 232.08,11.07" /></svg>

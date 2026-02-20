@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="315.28px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 315.28 37.56944465637207" height="37.56944465637207px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="17.11">TEST</text><rect rx="3" x="15.0" width="33.3522424697876" height="15.70138931274414" y="5.53" class="syntaxgroupcomp" /><text class="syntaxkwd" x="67.35" y="17.11">EVENT(</text><text class="syntaxvar" x="104.31" y="17.11"> data-value</text><text class="syntaxdelim" x="159.87" y="17.11">)</text><rect rx="3" x="63.35" width="103.39441386461257" height="17.56944465637207" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="185.75" y="17.11">FIRESTATUS(</text><text class="syntaxvar" x="253.53" y="17.11"> cvda</text><text class="syntaxdelim" x="278.4" y="17.11">)</text><rect rx="3" x="181.75" width="103.52959920167923" height="17.56944465637207" y="5.0" class="syntaxgroupcomp" /><polygon class="arrowheadStartEnd" points="5.0,14.11 0.0,16.61 0.0,11.61" /><polygon class="arrowheadStartEnd" points="10.0,14.11 5.0,16.61 5.0,11.61" /><line y2="14.11" x1="5.0" x2="15.0" class="syntaxarrow" y1="14.11" /><line y2="14.11" x1="48.35" x2="63.35" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="63.35,14.11 58.35,16.61 58.35,11.61" /><line y2="14.11" x1="166.75" x2="181.75" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="181.75,14.11 176.75,16.61 176.75,11.61" /><line y2="14.11" x1="285.28" x2="295.28" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadStartEnd" points="295.28,14.11 290.28,16.61 290.28,11.61" /><polygon class="arrowheadStartEnd" points="295.28,14.11 290.28,16.61 290.28,11.61" /></svg>

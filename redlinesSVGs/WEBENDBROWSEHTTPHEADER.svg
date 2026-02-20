@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="442.89px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 442.89 57.13944465637207" height="57.13944465637207px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="16.57">WEB</text><rect rx="3" x="15.0" width="30.888833618164064" height="15.44444465637207" y="5.13" class="syntaxgroupcomp" /><text class="syntaxkwd" x="64.89" y="16.57">ENDBROWSE</text><rect rx="3" x="60.89" width="73.61546306610107" height="15.70138931274414" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="153.5" y="16.57">HTTPHEADER</text><rect rx="3" x="149.5" width="76.6955722808838" height="15.44444465637207" y="5.13" class="syntaxgroupcomp" /><text class="syntaxkwd" x="265.2" y="36.68">SESSTOKEN(</text><text class="syntaxvar" x="330.46" y="36.68"> data-value</text><text class="syntaxdelim" x="386.01" y="36.68">)</text><rect rx="3" x="261.2" width="131.6915942311287" height="17.56944465637207" y="24.57" class="syntaxgroupcomp" /><line y2="13.57" x1="241.2" x2="327.05" class="syntaxarrow" y1="13.57" /><line y2="13.57" x1="327.05" x2="412.89" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadAfterChoice" points="407.89,13.57 402.89,16.07 402.89,11.07" /><path class="syntaxarrow" d="M 241.2,13.57 246.2,13.57 246.2,18.57 246.2,28.68 246.2,33.68 251.2,33.68 261.2,33.68" /><polygon class="arrowheadStartChoice" points="261.2,33.68 256.2,36.18 256.2,31.18" /><path class="syntaxarrow" d="M 392.89,33.68 402.89,33.68 407.89,33.68 407.89,28.68 407.89,18.57 407.89,13.57 412.89,13.57" /><polygon class="arrowheadAfterChoice" points="407.89,18.57 402.89,21.07 402.89,16.07" /><polygon class="arrowheadStartEnd" points="5.0,13.57 0.0,16.07 0.0,11.07" /><polygon class="arrowheadStartEnd" points="10.0,13.57 5.0,16.07 5.0,11.07" /><line y2="13.57" x1="5.0" x2="15.0" class="syntaxarrow" y1="13.57" /><line y2="13.57" x1="45.89" x2="60.89" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadSeq" points="60.89,13.57 55.89,16.07 55.89,11.07" /><line y2="13.57" x1="134.5" x2="149.5" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadSeq" points="149.5,13.57 144.5,16.07 144.5,11.07" /><line y2="13.57" x1="226.2" x2="241.2" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadSeq" points="241.2,13.57 236.2,16.07 236.2,11.07" /><line y2="13.57" x1="412.89" x2="422.89" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadStartEnd" points="422.89,13.57 417.89,16.07 417.89,11.07" /><polygon class="arrowheadStartEnd" points="422.89,13.57 417.89,16.07 417.89,11.07" /></svg>

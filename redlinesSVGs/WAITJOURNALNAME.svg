@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="383.33px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 383.33 57.96763931274414" height="57.96763931274414px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="17.11">WAIT JOURNALNAME(</text><text class="syntaxvar" x="133.08" y="17.11"> data-value</text><text class="syntaxdelim" x="188.64" y="17.11">)</text><rect rx="3" x="15.0" width="180.51386252641677" height="17.56944465637207" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="234.51" y="37.22">REQID(</text><text class="syntaxvar" x="270.89" y="37.22"> data-value</text><text class="syntaxdelim" x="326.45" y="37.22">)</text><rect rx="3" x="230.51" width="102.81214820146562" height="17.85763931274414" y="25.11" class="syntaxgroupcomp" /><line y2="14.11" x1="210.51" x2="281.92" class="syntaxarrow" y1="14.11" /><line y2="14.11" x1="281.92" x2="353.33" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadAfterChoice" points="348.33,14.11 343.33,16.61 343.33,11.61" /><path class="syntaxarrow" d="M 210.51,14.11 215.51,14.11 215.51,19.11 215.51,29.22 215.51,34.22 220.51,34.22 230.51,34.22" /><polygon class="arrowheadStartChoice" points="230.51,34.22 225.51,36.72 225.51,31.72" /><path class="syntaxarrow" d="M 333.33,34.22 343.33,34.22 348.33,34.22 348.33,29.22 348.33,19.11 348.33,14.11 353.33,14.11" /><polygon class="arrowheadAfterChoice" points="348.33,19.11 343.33,21.61 343.33,16.61" /><polygon class="arrowheadStartEnd" points="5.0,14.11 0.0,16.61 0.0,11.61" /><polygon class="arrowheadStartEnd" points="10.0,14.11 5.0,16.61 5.0,11.61" /><line y2="14.11" x1="5.0" x2="15.0" class="syntaxarrow" y1="14.11" /><line y2="14.11" x1="195.51" x2="210.51" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadSeq" points="210.51,14.11 205.51,16.61 205.51,11.61" /><line y2="14.11" x1="353.33" x2="363.33" class="syntaxarrow" y1="14.11" /><polygon class="arrowheadStartEnd" points="363.33,14.11 358.33,16.61 358.33,11.61" /><polygon class="arrowheadStartEnd" points="363.33,14.11 358.33,16.61 358.33,11.61" /></svg>

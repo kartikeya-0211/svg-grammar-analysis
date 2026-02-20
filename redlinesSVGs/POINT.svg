@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="230.19px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 230.19 80.70944465637207" height="80.70944465637207px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="16.57">POINT</text><rect rx="3" x="15.0" width="40.227674865722655" height="15.70138931274414" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="96.7" y="36.68">CONVID(</text><text class="syntaxvar" x="141.46" y="36.68"> name</text><text class="syntaxdelim" x="170.84" y="36.68">)</text><rect rx="3" x="92.7" width="85.02105609178543" height="17.56944465637207" y="24.57" class="syntaxgroupcomp" /><text class="syntaxkwd" x="94.23" y="60.25">SESSION(</text><text class="syntaxvar" x="143.93" y="60.25"> name</text><text class="syntaxdelim" x="173.31" y="60.25">)</text><rect rx="3" x="90.23" width="89.95860034227371" height="17.56944465637207" y="48.14" class="syntaxgroupcomp" /><line y2="13.57" x1="70.23" x2="135.21" class="syntaxarrow" y1="13.57" /><line y2="13.57" x1="135.21" x2="200.19" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadAfterChoice" points="195.19,13.57 190.19,16.07 190.19,11.07" /><path class="syntaxarrow" d="M 70.23,13.57 75.23,13.57 75.23,18.57 75.23,28.68 75.23,33.68 80.23,33.68 92.7,33.68" /><polygon class="arrowheadStartChoice" points="92.7,33.68 87.7,36.18 87.7,31.18" /><path class="syntaxarrow" d="M 177.72,33.68 190.19,33.68 195.19,33.68 195.19,28.68 195.19,18.57 195.19,13.57 200.19,13.57" /><polygon class="arrowheadAfterChoice" points="195.19,18.57 190.19,21.07 190.19,16.07" /><path class="syntaxarrow" d="M 70.23,13.57 75.23,13.57 75.23,18.57 75.23,52.25 75.23,57.25 80.23,57.25 90.23,57.25" /><polygon class="arrowheadStartChoice" points="90.23,57.25 85.23,59.75 85.23,54.75" /><path class="syntaxarrow" d="M 180.19,57.25 190.19,57.25 195.19,57.25 195.19,52.25 195.19,18.57 195.19,13.57 200.19,13.57" /><polygon class="arrowheadAfterChoice" points="195.19,18.57 190.19,21.07 190.19,16.07" /><polygon class="arrowheadStartEnd" points="5.0,13.57 0.0,16.07 0.0,11.07" /><polygon class="arrowheadStartEnd" points="10.0,13.57 5.0,16.07 5.0,11.07" /><line y2="13.57" x1="5.0" x2="15.0" class="syntaxarrow" y1="13.57" /><line y2="13.57" x1="55.23" x2="70.23" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadSeq" points="70.23,13.57 65.23,16.07 65.23,11.07" /><line y2="13.57" x1="200.19" x2="210.19" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadStartEnd" points="210.19,13.57 205.19,16.07 205.19,11.07" /><polygon class="arrowheadStartEnd" points="210.19,13.57 205.19,16.07 205.19,11.07" /></svg>

@@ -1,0 +1,18 @@
+<svg contentscripttype="text/ecmascript" zoomAndPan="magnify" contentstyletype="text/css" version="1.0" width="268.99px" preserveAspectRatio="xMidYMid meet" viewBox="-10.0 -5.0 268.99 84.21944465637208" height="84.21944465637208px" class="syntaxdiagram"><defs><style type="text/css" xml:space="preserve">
+.arrow, .syntaxarrow { fill: none; stroke: black; }
+.arrowheadStartEnd, .arrowheadRepSep, .arrowheadRepSepReturn { stroke: black; fill: black; }
+.arrowheadSeq, .arrowheadStartChoice, .arrowheadAfterChoice, .arrowheadStartRepGroup, .arrowheadEndRepGroup, .arrowheadRev { stroke: none; fill: none; }
+rect { fill: none; stroke: none; }
+rect.fragref,rect.syntaxfragref { fill: none; stroke: black; }
+text {
+fill: #000000;
+fill-opacity: 1;
+font-family: IBM Plex Sans,Arial Unicode MS,Arial,Helvetica;
+font-style: normal;
+font-weight: normal;
+font-size: 8pt;
+stroke: #000000;
+stroke-width: 0.1;
+}
+text.var, text.syntaxvar {font-style:italic;}
+</style></defs><text class="syntaxkwd" x="19.0" y="16.57">RESUME </text><rect rx="3" x="15.0" width="49.65300941467285" height="15.70138931274414" y="5.0" class="syntaxgroupcomp" /><text class="syntaxkwd" x="123.82" y="16.57">ACQACTIVITY</text><rect rx="3" x="119.82" width="79.01502189636231" height="17.322916984558105" y="5.0" class="syntaxkwd" /><text class="syntaxkwd" x="124.53" y="39.9">ACQPROCESS</text><rect rx="3" x="120.53" width="77.59162750244141" height="17.322916984558105" y="28.32" class="syntaxkwd" /><text class="syntaxkwd" x="103.65" y="63.75">ACTIVITY(</text><text class="syntaxvar" x="156.56" y="63.75"> data-value</text><text class="syntaxdelim" x="212.12" y="63.75">)</text><rect rx="3" x="99.65" width="119.33956252336503" height="17.56944465637207" y="51.65" class="syntaxgroupcomp" /><line y2="13.57" x1="79.65" x2="119.82" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadStartChoice" points="119.82,13.57 114.82,16.07 114.82,11.07" /><line y2="13.57" x1="198.83" x2="238.99" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadAfterChoice" points="233.99,13.57 228.99,16.07 228.99,11.07" /><path class="syntaxarrow" d="M 79.65,13.57 84.65,13.57 84.65,18.57 84.65,31.9 84.65,36.9 89.65,36.9 120.53,36.9" /><polygon class="arrowheadStartChoice" points="120.53,36.9 115.53,39.4 115.53,34.4" /><path class="syntaxarrow" d="M 198.12,36.9 228.99,36.9 233.99,36.9 233.99,31.9 233.99,18.57 233.99,13.57 238.99,13.57" /><polygon class="arrowheadAfterChoice" points="233.99,18.57 228.99,21.07 228.99,16.07" /><path class="syntaxarrow" d="M 79.65,13.57 84.65,13.57 84.65,18.57 84.65,55.75 84.65,60.75 89.65,60.75 99.65,60.75" /><polygon class="arrowheadStartChoice" points="99.65,60.75 94.65,63.25 94.65,58.25" /><path class="syntaxarrow" d="M 218.99,60.75 228.99,60.75 233.99,60.75 233.99,55.75 233.99,18.57 233.99,13.57 238.99,13.57" /><polygon class="arrowheadAfterChoice" points="233.99,18.57 228.99,21.07 228.99,16.07" /><polygon class="arrowheadStartEnd" points="5.0,13.57 0.0,16.07 0.0,11.07" /><polygon class="arrowheadStartEnd" points="10.0,13.57 5.0,16.07 5.0,11.07" /><line y2="13.57" x1="5.0" x2="15.0" class="syntaxarrow" y1="13.57" /><line y2="13.57" x1="64.65" x2="79.65" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadSeq" points="79.65,13.57 74.65,16.07 74.65,11.07" /><line y2="13.57" x1="238.99" x2="248.99" class="syntaxarrow" y1="13.57" /><polygon class="arrowheadStartEnd" points="248.99,13.57 243.99,16.07 243.99,11.07" /><polygon class="arrowheadStartEnd" points="248.99,13.57 243.99,16.07 243.99,11.07" /></svg>
