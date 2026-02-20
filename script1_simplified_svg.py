@@ -1,13 +1,12 @@
 """
-SCRIPT 1: RE-FETCH, PROCESS & VISUALIZE
+SCRIPT 1: RE-FETCH, PROCESS & VISUALIZE (SMART LOCAL LOAD)
 -------------------------------------------------
 1. Reads URLs from 'railroad_diagrams.xlsx' (Column B).
-2. RE-FETCHES the Raw SVG from the live URL (ignores broken Excel data).
-3. Updates Column C (Raw SVG Code) with the fresh data.
-4. Generates RAW SVG IMAGE -> Saves to Column D.
-5. Processes SVG (Flattens + Adds Red Lines) -> Saves Code to Column E.
-6. Generates CONNECTED SVG IMAGE -> Saves to Column F.
-7. Saves the Connected SVG file to 'redlinesSVGs' folder.
+2. Checks if local SVG exists. If not, RE-FETCHES from web.
+3. Updates Column C (Raw SVG Code) and Column D (Raw SVG Image).
+4. Checks if redlines SVG exists. If not, processes it.
+5. Updates Column E (Connected SVG Code) and Column F (Connected SVG Image).
+6. Saves files to 'rawSVGs' and 'redlinesSVGs' folders.
 """
 
 import os
@@ -29,6 +28,7 @@ from selenium.webdriver.edge.options import Options
 INPUT_FILE = 'railroad_diagrams.xlsx'  # Must contain URLs in Col B
 DRIVER_FILENAME = "msedgedriver.exe"
 DRIVER_PATH = os.path.join(os.getcwd(), DRIVER_FILENAME)
+RAW_DIR = 'rawSVGs'
 REDLINES_DIR = 'redlinesSVGs'
 
 # ==========================================
@@ -58,7 +58,6 @@ def fetch_svg_source_live(driver, url):
     """Goes to the URL and grabs the fresh SVG code."""
     try:
         driver.get(url)
-        # Wait for SVG to render (Max 5s is usually enough)
         wait = WebDriverWait(driver, 5)
         svg_elem = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "svg.syntaxdiagram")))
         return svg_elem.get_attribute("outerHTML")
@@ -83,7 +82,7 @@ def take_screenshot(driver, svg_string, output_path):
     except: return False
 
 # ==========================================
-# PART 2: FLATTENING & GEOMETRY (The Fix)
+# PART 2: FLATTENING & GEOMETRY
 # ==========================================
 def calculate_bounds(root):
     min_x, min_y = 10000.0, 10000.0
@@ -260,12 +259,13 @@ def add_red_lines(svg_string):
 # ==========================================
 def main():
     print("=" * 70)
-    print("SCRIPT 1: RE-FETCH FROM URL & PROCESS")
+    print("SCRIPT 1: SMART LOCAL LOAD & PROCESS")
     print("=" * 70)
 
-    if not os.path.exists(REDLINES_DIR):
-        os.makedirs(REDLINES_DIR)
-        print(f"📂 Created folder: {REDLINES_DIR}")
+    # Make sure folders exist
+    for folder in [RAW_DIR, REDLINES_DIR]:
+        if not os.path.exists(folder):
+            os.makedirs(folder)
 
     if not os.path.exists(INPUT_FILE):
         print(f"❌ Error: Input file '{INPUT_FILE}' not found.")
@@ -276,7 +276,7 @@ def main():
     ws = wb.active
     
     driver = setup_driver()
-    print("✅ Driver ready. Starting re-fetch cycle...")
+    print("✅ Driver ready. Starting process...\n")
 
     processed_count = 0
     
@@ -287,61 +287,87 @@ def main():
             url = ws.cell(row=row, column=2).value
             
             if not cmd: break 
-            
-            print(f"[{row-1}] {cmd}...", end="")
+            print(f"[{row-1}] {cmd}...", end=" ")
 
             if not url:
-                print(" ⚠️ Skipped (No URL)")
+                print("⚠️ Skipped (No URL)")
                 continue
 
-            # 1. RE-FETCH RAW SVG FROM WEB (Ignore bad Excel data)
-            raw_svg = fetch_svg_source_live(driver, url)
+            raw_path = os.path.join(RAW_DIR, f"{cmd}.svg")
+            conn_path = os.path.join(REDLINES_DIR, f"{cmd}.svg")
+            raw_svg = None
+            connected_svg = None
 
-            if raw_svg:
-                # Update Excel with fresh data
-                ws.cell(row=row, column=3, value=raw_svg[:32000]).alignment = Alignment(wrap_text=True, vertical='top')
-
-                # 2. SCREENSHOT RAW (Column D)
-                img_path_raw = f"temp_raw_{row}.png"
-                if take_screenshot(driver, raw_svg, img_path_raw):
-                    img = ExcelImage(img_path_raw)
-                    if img.height > 150:
-                        ratio = 150/img.height
-                        img.height = 150
-                        img.width = int(img.width * ratio)
-                    ws.add_image(img, f"D{row}")
-
-                # 3. GENERATE CONNECTED CODE (Column E)
-                connected_svg = add_red_lines(raw_svg)
-                ws.cell(row=row, column=5, value=connected_svg[:32000]).alignment = Alignment(wrap_text=True, vertical='top')
-                
-                # Save the Connected SVG to the new folder
-                out_path = os.path.join(REDLINES_DIR, f"{cmd}.svg")
-                with open(out_path, 'w', encoding='utf-8') as f:
-                    f.write(connected_svg)
-
-                # 4. SCREENSHOT CONNECTED (Column F)
-                img_path_conn = f"temp_conn_{row}.png"
-                if take_screenshot(driver, connected_svg, img_path_conn):
-                    img = ExcelImage(img_path_conn)
-                    if img.height > 150:
-                        ratio = 150/img.height
-                        img.height = 150
-                        img.width = int(img.width * ratio)
-                    ws.add_image(img, f"F{row}")
-
-                ws.row_dimensions[row].height = 150
-                print(" ✅ Refetched & Processed")
-                processed_count += 1
+            # ---------------------------------------------------
+            # STEP 1: LOAD OR FETCH RAW SVG
+            # ---------------------------------------------------
+            if os.path.exists(raw_path):
+                with open(raw_path, 'r', encoding='utf-8') as f:
+                    raw_svg = f.read()
+                print("📂 Local Raw", end=" | ")
             else:
-                print(" ❌ Fetch Failed (No SVG)")
+                raw_svg = fetch_svg_source_live(driver, url)
+                if raw_svg:
+                    with open(raw_path, 'w', encoding='utf-8') as f:
+                        f.write(raw_svg)
+                    print("🌐 Fetched", end=" | ")
+
+            if not raw_svg:
+                print("❌ Failed (No SVG)")
+                continue
+
+            # ---------------------------------------------------
+            # STEP 2: LOAD OR GENERATE REDLINES SVG
+            # ---------------------------------------------------
+            if os.path.exists(conn_path):
+                with open(conn_path, 'r', encoding='utf-8') as f:
+                    connected_svg = f.read()
+                print("📂 Local Redlines", end=" | ")
+            else:
+                connected_svg = add_red_lines(raw_svg)
+                with open(conn_path, 'w', encoding='utf-8') as f:
+                    f.write(connected_svg)
+                print("⚙️ Processed", end=" | ")
+
+            # ---------------------------------------------------
+            # STEP 3: UPDATE EXCEL (CODE & IMAGES)
+            # ---------------------------------------------------
+            # A. Update Raw Code (Col C)
+            ws.cell(row=row, column=3, value=raw_svg[:32000]).alignment = Alignment(wrap_text=True, vertical='top')
+
+            # B. Screenshot Raw (Col D)
+            img_path_raw = f"temp_raw_{row}.png"
+            if take_screenshot(driver, raw_svg, img_path_raw):
+                img = ExcelImage(img_path_raw)
+                if img.height > 150:
+                    ratio = 150/img.height
+                    img.height = 150
+                    img.width = int(img.width * ratio)
+                ws.add_image(img, f"D{row}")
+
+            # C. Update Connected Code (Col E)
+            ws.cell(row=row, column=5, value=connected_svg[:32000]).alignment = Alignment(wrap_text=True, vertical='top')
+
+            # D. Screenshot Connected (Col F)
+            img_path_conn = f"temp_conn_{row}.png"
+            if take_screenshot(driver, connected_svg, img_path_conn):
+                img = ExcelImage(img_path_conn)
+                if img.height > 150:
+                    ratio = 150/img.height
+                    img.height = 150
+                    img.width = int(img.width * ratio)
+                ws.add_image(img, f"F{row}")
+
+            ws.row_dimensions[row].height = 150
+            print("✅ Excel Updated")
+            processed_count += 1
 
     finally:
         if driver: driver.quit()
-        print(f"💾 Saving {INPUT_FILE} (This may take a moment)...")
+        print(f"\n💾 Saving {INPUT_FILE} (This may take a moment)...")
         wb.save(INPUT_FILE)
         
-        # Cleanup
+        # Cleanup temp images
         if os.path.exists("temp_render.html"): os.remove("temp_render.html")
         for f in os.listdir():
             if f.startswith("temp_") and f.endswith(".png"):
@@ -349,8 +375,7 @@ def main():
                 except: pass
 
         print("-" * 70)
-        print(f"✅ Finished. Processed {processed_count} rows.")
-        print(f"📂 Saved SVG files to '{REDLINES_DIR}'.")
+        print(f"🎉 Finished. Processed {processed_count} rows.")
         print(f"💾 Updated File: {INPUT_FILE}")
 
 if __name__ == "__main__":
