@@ -5,10 +5,9 @@ import openpyxl
 from openpyxl.styles import Alignment
 
 INPUT_EXCEL = 'railroad_diagrams.xlsx'
-SVG_FOLDER = 'redlinesSVGs'
+SVG_FOLDER = 'blacklinesSVGs'
 
 def get_raw_blocks(root):
-    """Extracts rectangles and the text inside them."""
     blocks = []
     for rect in root.iter('rect'):
         x = float(rect.get('x', 0))
@@ -28,7 +27,6 @@ def get_raw_blocks(root):
     return blocks
 
 def merge_split_words(blocks):
-    """Stitches split parentheses or brackets back together."""
     blocks.sort(key=lambda b: (round(b['y'] / 10), b['x']))
     merged = []
     
@@ -54,7 +52,6 @@ def merge_split_words(blocks):
     return merged
 
 def get_tracks_and_mainlines(root):
-    """Finds all line/path coordinates and horizontal mainlines."""
     paths = []
     main_ys = []
     
@@ -75,7 +72,6 @@ def get_tracks_and_mainlines(root):
     return paths, main_ys
 
 def assign_branch_points(blocks, paths):
-    """Traces the block's path back to where it split from the mainline."""
     for block in blocks:
         bx, by, bw, bh = block['x'], block['y'], block['w'], block['h']
         best_branch_x, best_branch_y = bx, by
@@ -116,8 +112,10 @@ def generate_grammar(blocks, paths, main_ys):
 
     grammar = []
     n = 0
+    current_frontier = f"n{n}"
+    n += 1
     
-    # 2. PROCESS COLUMNS (Parallel Alternatives)
+    # 2. PROCESS COLUMNS WITH TRACK SURVIVAL LOGIC
     for row in rows:
         row.sort(key=lambda b: b['branch_x'])
         columns, curr_col = [], []
@@ -137,20 +135,69 @@ def generate_grammar(blocks, paths, main_ys):
         avg_branch_y = sum(b['branch_y'] for b in row) / len(row)
         closest_main_y = min(main_ys, key=lambda my: abs(my - avg_branch_y))
         
+        active_states = {closest_main_y: current_frontier}
+        
         # 3. GENERATE LOGIC STRINGS
-        for col in columns:
-            curr_n, next_n = f"n{n}", f"n{n+1}"
-            has_main = any(b['y'] - 2 <= closest_main_y <= b['y'] + b['h'] + 2 for b in col)
-            
-            if not has_main:
-                grammar.append(f"{curr_n} -> {next_n}")
-                
-            for b in col:
-                grammar.append(f"{curr_n} -> {b['text']} {next_n}")
-                
+        for i, col in enumerate(columns):
+            surviving_tracks = set()
+            for next_col in columns[i+1:]:
+                for b in next_col:
+                    surviving_tracks.add(b['y'])
+                    
+            main_dest = f"n{n}"
             n += 1
+            
+            dest_states = {closest_main_y: main_dest}
+            
+            for b in col:
+                y_val = b['y']
+                is_surviving = any(abs(y_val - sy) < 15 for sy in surviving_tracks)
+                is_main = abs(y_val - closest_main_y) < 15
+                
+                if is_surviving and not is_main:
+                    existing_dest = None
+                    for dy in dest_states:
+                        if abs(dy - y_val) < 15 and dy != closest_main_y:
+                            existing_dest = dest_states[dy]
+                            break
+                    if existing_dest:
+                        dest_states[y_val] = existing_dest
+                    else:
+                        dest_states[y_val] = f"n{n}"
+                        n += 1
+                else:
+                    dest_states[y_val] = main_dest
 
-    grammar.append(f"n{n} -> null")
+            has_main = any(abs(b['y'] - closest_main_y) < 15 for b in col)
+            if not has_main:
+                src_main = active_states.get(closest_main_y, list(active_states.values())[0])
+                grammar.append(f"{src_main} -> {main_dest}")
+
+            for b in col:
+                y_val = b['y']
+                
+                src_keys = [k for k in active_states.keys() if abs(k - y_val) < 15]
+                src_n = active_states[src_keys[0]] if src_keys else active_states.get(closest_main_y, list(active_states.values())[0])
+                
+                dest_keys = [k for k in dest_states.keys() if abs(k - y_val) < 15]
+                dest_n = dest_states[dest_keys[0]] if dest_keys else main_dest
+                
+                grammar.append(f"{src_n} -> {b['text']} {dest_n}")
+
+            active_states = dest_states
+
+        # End of Row: Merge all remaining tracks smartly
+        unique_states = list(set(active_states.values()))
+        
+        if len(unique_states) == 1:
+            current_frontier = unique_states[0]
+        else:
+            current_frontier = f"n{n}"
+            n += 1
+            for state in unique_states:
+                grammar.append(f"{state} -> {current_frontier}")
+
+    grammar.append(f"{current_frontier} -> null")
     return "\n".join(grammar)
 
 def process_railroad_diagrams(excel_filename, svg_folder):
