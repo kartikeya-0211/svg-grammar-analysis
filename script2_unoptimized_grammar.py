@@ -6,202 +6,155 @@ from openpyxl.styles import Alignment
 
 INPUT_EXCEL = 'railroad_diagrams.xlsx'
 SVG_FOLDER = 'blacklinesSVGs'
+DEBUG_FILE = 'grammar_debug.txt' 
 
-def get_raw_blocks(root):
+# ==========================================
+# 1. SVG TRANSFORM PARSER (Absolute Math)
+# ==========================================
+def parse_transform(transform_str):
+    """Extracts X,Y shifts from group tags like <g transform='translate(10,40)'>"""
+    if not transform_str: return 0.0, 0.0
+    match = re.search(r'translate\(\s*([-+]?\d*\.?\d+)\s*(?:,\s*([-+]?\d*\.?\d+))?\s*\)', transform_str)
+    if match:
+        dx = float(match.group(1))
+        dy = float(match.group(2)) if match.group(2) else 0.0
+        return dx, dy
+    return 0.0, 0.0
+
+def extract_absolute_elements(root):
+    """Recursively walks the XML tree to calculate true global coordinates."""
     blocks = []
-    for rect in root.iter('rect'):
-        x = float(rect.get('x', 0))
-        y = float(rect.get('y', 0))
-        w = float(rect.get('width', 0))
-        h = float(rect.get('height', 0))
-        
-        text_str = ""
-        for text in root.iter('text'):
-            tx = float(text.get('x', 0))
-            ty = float(text.get('y', 0))
-            if x - 5 <= tx <= x + w + 5 and y - 10 <= ty <= y + h + 10:
-                text_str += text.text.strip() if text.text else ""
-        
-        if text_str:
-            blocks.append({'x': x, 'y': y, 'w': w, 'h': h, 'text': text_str})
-    return blocks
+    paths = []
 
-def merge_split_words(blocks):
-    blocks.sort(key=lambda b: (round(b['y'] / 10), b['x']))
-    merged = []
+    def walk(node, current_dx, current_dy):
+        dx, dy = parse_transform(node.get('transform'))
+        abs_x = current_dx + dx
+        abs_y = current_dy + dy
+
+        if node.tag == 'rect':
+            blocks.append({
+                'type': 'rect',
+                'x': float(node.get('x', 0)) + abs_x,
+                'y': float(node.get('y', 0)) + abs_y,
+                'w': float(node.get('width', 0)),
+                'h': float(node.get('height', 0)),
+                'text': ''
+            })
+            
+        elif node.tag == 'text':
+            if node.text and node.text.strip():
+                blocks.append({
+                    'type': 'text',
+                    'x': float(node.get('x', 0)) + abs_x,
+                    'y': float(node.get('y', 0)) + abs_y,
+                    'val': node.text.strip()
+                })
+                
+        elif node.tag == 'line':
+            x1, y1 = float(node.get('x1', 0)) + abs_x, float(node.get('y1', 0)) + abs_y
+            x2, y2 = float(node.get('x2', 0)) + abs_x, float(node.get('y2', 0)) + abs_y
+            paths.append([(x1, y1), (x2, y2)])
+            
+        elif node.tag == 'path':
+            d = node.get('d', '')
+            nums = [float(n) for n in re.findall(r'[-+]?\d*\.?\d+', d)]
+            pts = [((nums[i] + abs_x), (nums[i+1] + abs_y)) for i in range(0, len(nums)-1, 2)]
+            if pts: paths.append(pts)
+
+        for child in node:
+            walk(child, abs_x, abs_y)
+
+    walk(root, 0.0, 0.0)
+    return blocks, paths
+
+def map_text_to_blocks(raw_elements):
+    """Assigns the floating text to their surrounding rectangles."""
+    rects = [e for e in raw_elements if e['type'] == 'rect']
+    texts = [e for e in raw_elements if e['type'] == 'text']
     
-    for b in blocks:
+    final_blocks = []
+    for r in rects:
+        box_text = ""
+        for t in texts:
+            if r['x'] - 5 <= t['x'] <= r['x'] + r['w'] + 5 and r['y'] - 10 <= t['y'] <= r['y'] + r['h'] + 10:
+                box_text += t['val']
+        if box_text:
+            final_blocks.append({'x': r['x'], 'y': r['y'], 'w': r['w'], 'h': r['h'], 'text': box_text})
+            
+    # Expanded Y-bucket to keep taller boxes in the correct visual row
+    final_blocks.sort(key=lambda b: (round(b['y'] / 20), b['x']))
+    
+    merged = []
+    for b in final_blocks:
         if not merged:
             merged.append(b)
             continue
-            
         prev = merged[-1]
         gap = b['x'] - (prev['x'] + prev['w'])
-        
         if abs(prev['y'] - b['y']) < 10 and 0 <= gap <= 25:
-            ptxt = prev['text'].strip()
-            btxt = b['text'].strip()
-            
+            ptxt, btxt = prev['text'].strip(), b['text'].strip()
             if btxt in ('(', ')') or ptxt.endswith('(') or btxt.startswith('(') or btxt.startswith(')'):
                 prev['text'] += b['text']
                 prev['w'] = (b['x'] + b['w']) - prev['x']
                 continue
-                
         merged.append(b)
-            
     return merged
 
-def get_tracks_and_mainlines(root):
-    paths = []
-    main_ys = []
-    
-    for line in root.iter('line'):
-        y1, y2 = float(line.get('y1', 0)), float(line.get('y2', 0))
-        x1, x2 = float(line.get('x1', 0)), float(line.get('x2', 0))
-        paths.append([(x1, y1), (x2, y2)])
-        if abs(y1 - y2) < 2:
-            main_ys.append(y1)
-            
-    for path in root.iter('path'):
-        d = path.get('d', '')
-        nums = [float(n) for n in re.findall(r'[-+]?\d*\.?\d+', d)]
-        pts = [(nums[i], nums[i+1]) for i in range(0, len(nums)-1, 2)]
-        if pts: paths.append(pts)
-        
-    if not main_ys: main_ys = [0.0]
-    return paths, main_ys
-
-def assign_branch_points(blocks, paths):
-    for block in blocks:
-        bx, by, bw, bh = block['x'], block['y'], block['w'], block['h']
-        best_branch_x, best_branch_y = bx, by
-        found = False
-        
-        for pts in paths:
-            touches = any(bx - 30 <= px <= bx + 10 and by - 15 <= py <= by + bh + 15 for px, py in pts)
-            if touches:
-                start_x, start_y = pts[0]
-                if not found or start_x < best_branch_x:
-                    best_branch_x, best_branch_y = start_x, start_y
-                    found = True
-                    
-        block['branch_x'] = best_branch_x
-        block['branch_y'] = best_branch_y
-
-def generate_grammar(blocks, paths, main_ys):
+# ==========================================
+# 2. THE EXACT COORDINATE GRAPH ALGORITHM
+# ==========================================
+def generate_grammar_from_coordinates(blocks, paths):
+    """Maps the physical coordinates into an NFA Graph."""
     if not blocks: return "n0 -> null"
     
-    blocks = merge_split_words(blocks)
-    assign_branch_points(blocks, paths)
+    nodes = []
     
-    # 1. GROUP BY ROW
-    blocks.sort(key=lambda b: b['branch_y'])
-    rows, curr_row = [], []
+    def get_node(x, y):
+        for i, (nx, ny) in enumerate(nodes):
+            # FIX: Expanded horizontal AND vertical snapping to safely grab detached arrows
+            if abs(nx - x) <= 35 and abs(ny - y) <= 20: 
+                return f"n{i}"
+        nodes.append((x, y))
+        return f"n{len(nodes)-1}"
+
+    grammar_edges = set()
     
     for b in blocks:
-        if not curr_row:
-            curr_row.append(b)
-        else:
-            avg_y = sum(c['branch_y'] for c in curr_row) / len(curr_row)
-            if abs(b['branch_y'] - avg_y) < 25:
-                curr_row.append(b)
-            else:
-                rows.append(curr_row)
-                curr_row = [b]
-    if curr_row: rows.append(curr_row)
-
-    grammar = []
-    n = 0
-    current_frontier = f"n{n}"
-    n += 1
+        center_y = b['y'] + (b['h'] / 2)
+        n_start = get_node(b['x'], center_y)
+        n_end = get_node(b['x'] + b['w'], center_y)
+        grammar_edges.add((n_start, b['text'], n_end))
+        
+    for pts in paths:
+        if not pts: continue
+        x1, y1 = pts[0]
+        x2, y2 = pts[-1]
+        n_start = get_node(x1, y1)
+        n_end = get_node(x2, y2)
+        if n_start != n_end:
+            grammar_edges.add((n_start, "", n_end))
+            
+    # Connect dead ends to null
+    outgoing = {s for s, l, e in grammar_edges}
+    incoming = {e for s, l, e in grammar_edges}
     
-    # 2. PROCESS COLUMNS WITH TRACK SURVIVAL LOGIC
-    for row in rows:
-        row.sort(key=lambda b: b['branch_x'])
-        columns, curr_col = [], []
-        
-        for b in row:
-            if not curr_col:
-                curr_col.append(b)
-            else:
-                avg_x = sum(c['branch_x'] for c in curr_col) / len(curr_col)
-                if abs(b['branch_x'] - avg_x) < 25:
-                    curr_col.append(b)
-                else:
-                    columns.append(curr_col)
-                    curr_col = [b]
-        if curr_col: columns.append(curr_col)
-        
-        avg_branch_y = sum(b['branch_y'] for b in row) / len(row)
-        closest_main_y = min(main_ys, key=lambda my: abs(my - avg_branch_y))
-        
-        active_states = {closest_main_y: current_frontier}
-        
-        # 3. GENERATE LOGIC STRINGS
-        for i, col in enumerate(columns):
-            surviving_tracks = set()
-            for next_col in columns[i+1:]:
-                for b in next_col:
-                    surviving_tracks.add(b['y'])
-                    
-            main_dest = f"n{n}"
-            n += 1
+    for n in range(len(nodes)):
+        node_name = f"n{n}"
+        if node_name not in outgoing and node_name in incoming:
+            grammar_edges.add((node_name, "", "null"))
             
-            dest_states = {closest_main_y: main_dest}
-            
-            for b in col:
-                y_val = b['y']
-                is_surviving = any(abs(y_val - sy) < 15 for sy in surviving_tracks)
-                is_main = abs(y_val - closest_main_y) < 15
-                
-                if is_surviving and not is_main:
-                    existing_dest = None
-                    for dy in dest_states:
-                        if abs(dy - y_val) < 15 and dy != closest_main_y:
-                            existing_dest = dest_states[dy]
-                            break
-                    if existing_dest:
-                        dest_states[y_val] = existing_dest
-                    else:
-                        dest_states[y_val] = f"n{n}"
-                        n += 1
-                else:
-                    dest_states[y_val] = main_dest
-
-            has_main = any(abs(b['y'] - closest_main_y) < 15 for b in col)
-            if not has_main:
-                src_main = active_states.get(closest_main_y, list(active_states.values())[0])
-                grammar.append(f"{src_main} -> {main_dest}")
-
-            for b in col:
-                y_val = b['y']
-                
-                src_keys = [k for k in active_states.keys() if abs(k - y_val) < 15]
-                src_n = active_states[src_keys[0]] if src_keys else active_states.get(closest_main_y, list(active_states.values())[0])
-                
-                dest_keys = [k for k in dest_states.keys() if abs(k - y_val) < 15]
-                dest_n = dest_states[dest_keys[0]] if dest_keys else main_dest
-                
-                grammar.append(f"{src_n} -> {b['text']} {dest_n}")
-
-            active_states = dest_states
-
-        # End of Row: Merge all remaining tracks smartly
-        unique_states = list(set(active_states.values()))
+    grammar_strings = []
+    for s, l, e in grammar_edges:
+        if l: grammar_strings.append(f"{s} -> {l} {e}")
+        else: grammar_strings.append(f"{s} -> {e}")
         
-        if len(unique_states) == 1:
-            current_frontier = unique_states[0]
-        else:
-            current_frontier = f"n{n}"
-            n += 1
-            for state in unique_states:
-                grammar.append(f"{state} -> {current_frontier}")
+    return "\n".join(sorted(grammar_strings))
 
-    grammar.append(f"{current_frontier} -> null")
-    return "\n".join(grammar)
-
+# ==========================================
+# 3. PIPELINE EXECUTION
+# ==========================================
 def process_railroad_diagrams(excel_filename, svg_folder):
-    print("Starting Script 2: Generating Unoptimized Grammar")
+    print("Starting Script 2: Coordinate-Mapped NFA Generator")
     if not os.path.exists(excel_filename):
         print(f"Excel file '{excel_filename}' not found.")
         return
@@ -212,34 +165,38 @@ def process_railroad_diagrams(excel_filename, svg_folder):
     
     processed_count = 0
 
-    for row in range(2, sheet.max_row + 1):
-        raw_val = sheet.cell(row=row, column=1).value
-        if not raw_val: break 
+    print(f"📝 Logging output to {DEBUG_FILE}...")
+    with open(DEBUG_FILE, 'w', encoding='utf-8') as log_file:
+        log_file.write("=== SCRIPT 2: ABSOLUTE COORDINATE GRAPH LOG ===\n\n")
+
+        for row in range(2, sheet.max_row + 1):
+            raw_val = sheet.cell(row=row, column=1).value
+            if not raw_val: break 
+                
+            cmd_name = str(raw_val).strip()
+            absolute_path = os.path.abspath(os.path.join(svg_folder, f"{cmd_name}.svg"))
+            target_cell = sheet.cell(row=row, column=7)
+            target_cell.alignment = Alignment(wrap_text=True, vertical='top')
             
-        cmd_name = str(raw_val).strip()
-        absolute_path = os.path.abspath(os.path.join(svg_folder, f"{cmd_name}.svg"))
-        
-        target_cell = sheet.cell(row=row, column=7)
-        target_cell.alignment = Alignment(wrap_text=True, vertical='top')
-        
-        if os.path.exists(absolute_path):
-            try:
-                tree = ET.parse(absolute_path)
-                root = tree.getroot()
-                
-                for elem in root.iter():
-                    if '}' in elem.tag: elem.tag = elem.tag.split('}')[1]
-                
-                blocks = get_raw_blocks(root)
-                paths, main_ys = get_tracks_and_mainlines(root)
-                target_cell.value = generate_grammar(blocks, paths, main_ys)
-                
-                print(f"Processed: {cmd_name}")
-                processed_count += 1
-            except Exception as e:
-                target_cell.value = f"Error: {str(e)}"
-        else:
-            target_cell.value = "SVG not found"
+            if os.path.exists(absolute_path):
+                try:
+                    tree = ET.parse(absolute_path)
+                    root = tree.getroot()
+                    
+                    for elem in root.iter():
+                        if '}' in elem.tag: elem.tag = elem.tag.split('}')[1]
+                    
+                    raw_elements, paths = extract_absolute_elements(root)
+                    blocks = map_text_to_blocks(raw_elements)
+                    grammar_result = generate_grammar_from_coordinates(blocks, paths)
+                    
+                    target_cell.value = grammar_result
+                    log_file.write(f"--- COMMAND: {cmd_name} ---\n{grammar_result}\n\n")
+                    processed_count += 1
+                except Exception as e:
+                    target_cell.value = f"Error: {str(e)}"
+            else:
+                target_cell.value = "SVG not found"
 
     wb.save(excel_filename)
     print(f"Pipeline complete. Processed {processed_count} diagrams.")
